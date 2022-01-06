@@ -34,7 +34,9 @@ just replace `cert1` with `cert2-revoked` and you will see a different response.
 ### Run the server
 
 Run with a valid certificate (should expect a successful connection on client):
-`go run ./cmd/tls-server -cert cert1/cert1.crt.pem -cert cert1/cert1.key.pem`
+```
+go run ./cmd/tls-server -cert cert1/cert1.crt.pem -key cert1/cert1.key.pem
+```
 
 Run with a revoked certificate (should expect TLS handshake error on client side, but only of OCSP or CRL validation was enabled):
 ```
