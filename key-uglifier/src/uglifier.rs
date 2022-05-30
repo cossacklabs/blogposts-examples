@@ -6,12 +6,12 @@ fn param_set_default_encryption_key(key_length: u8) -> Vec<u8> {
     vec![0x62u8; key_length as usize]
 }
 
-fn read_hex_nibble(c: char) -> (bool, String) {
+fn read_hex_nibble(c: char) -> Result<String, String> {
     if "0123456789ABCDEFabcdef".contains(c) {
-        (true, c.to_string())
+        Ok(c.to_string())
     } else {
         // printf("[%u] read_hex_nibble: Error char not in supported range",nodeId);
-        (false, '0'.to_string().on_color("green").to_string())
+        Err('0'.to_string().on_color("green").to_string())
     }
 }
 
@@ -23,9 +23,13 @@ fn convert_to_hex(key_input: &str, key_length: u8) -> (bool, String) {
         if index > ((key_length as usize) * 2) - 1 {
             break;
         }
-        let (ok, num) = read_hex_nibble(character);
-        key_output.push_str(&num);
-        bad_chars |= !ok;
+        match read_hex_nibble(character) {
+            Ok(c) => key_output.push_str(&c),
+            Err(err) => {
+                key_output.push_str(&err);
+                bad_chars = true;
+            }
+        }
     }
 
     (bad_chars, key_output)
