@@ -7,7 +7,7 @@ fn param_set_default_encryption_key(key_length: u8) -> Vec<u8> {
 }
 
 fn read_hex_nibble(c: char) -> Result<String, String> {
-    if "0123456789ABCDEFabcdef".contains(c) {
+    if c.is_digit(16) {
         Ok(c.to_string())
     } else {
         // printf("[%u] read_hex_nibble: Error char not in supported range",nodeId);
