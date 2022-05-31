@@ -45,10 +45,12 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
         terminal.draw(|frame| ui::draw_state(frame, &mut state))?;
 
         if event::poll(Duration::from_secs(1))? {
-            if let Event::Key(key) = event::read()? {
+            let event = event::read()?;
+            if let Event::Key(key) = event {
                 if let KeyCode::Char('q') = key.code {
                     return Ok(());
                 }
+                state.handle_event(event);
             }
         }
 

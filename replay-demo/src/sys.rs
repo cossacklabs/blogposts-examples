@@ -1,3 +1,4 @@
+use crossterm::event::{self, Event, KeyCode};
 use tui::{layout::Rect, widgets::ListState};
 
 use crate::crypto::{self, Key};
@@ -84,5 +85,22 @@ impl State {
 
     pub fn log_selected(&self) -> Option<usize> {
         self.log_selected
+    }
+
+    pub fn handle_event(&mut self, event: Event) {
+        if let Event::Key(key) = event {
+            match key.code {
+                KeyCode::Up => match self.log_selected {
+                    Some(index) => self.log_selected = Some(index.saturating_sub(1)),
+                    None => self.log_selected = Some(self.logs.len() - 1),
+                },
+                KeyCode::Down => match self.log_selected {
+                    Some(index) => self.log_selected = Some(index.saturating_add(1)),
+                    None => self.log_selected = Some(0),
+                },
+                KeyCode::Esc => self.log_selected = None,
+                _ => {}
+            }
+        }
     }
 }
