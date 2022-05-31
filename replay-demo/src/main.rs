@@ -1,14 +1,15 @@
-use std::io::{self, Stdout};
+use std::{
+    io::{self, Stdout},
+    time::Duration,
+};
 
 use crossterm::{
     event::{self, Event, KeyCode},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use tui::{
-    backend::{Backend, CrosstermBackend},
-    layout::Rect,
-};
+use rand::Rng;
+use tui::backend::CrosstermBackend;
 
 mod crypto;
 mod sys;
@@ -38,15 +39,22 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     let (map, _, _) = ui::split_screen(screen);
 
     let game = sys::Game::new(map);
-    let state = sys::State::new(game, screen);
-
-    terminal.draw(|frame| ui::draw_state(frame, &state))?;
+    let mut state = sys::State::new(game, screen);
 
     loop {
-        if let Event::Key(key) = event::read()? {
-            if let KeyCode::Char('q') = key.code {
-                return Ok(());
+        terminal.draw(|frame| ui::draw_state(frame, &mut state))?;
+
+        if event::poll(Duration::from_secs(1))? {
+            if let Event::Key(key) = event::read()? {
+                if let KeyCode::Char('q') = key.code {
+                    return Ok(());
+                }
             }
         }
+
+        state.push_log(format!(
+            "Intercepted {:x}",
+            rand::thread_rng().gen::<u128>()
+        ));
     }
 }

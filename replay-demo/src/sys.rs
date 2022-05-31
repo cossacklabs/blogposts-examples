@@ -1,4 +1,4 @@
-use tui::layout::Rect;
+use tui::{layout::Rect, widgets::ListState};
 
 use crate::crypto::{self, Key};
 
@@ -52,11 +52,18 @@ impl Game {
 pub struct State {
     game: Game,
     screen: Rect,
+    logs: Vec<String>,
+    log_selected: Option<usize>,
 }
 
 impl State {
     pub fn new(game: Game, screen: Rect) -> Self {
-        Self { game, screen }
+        Self {
+            game,
+            screen,
+            logs: vec![],
+            log_selected: None,
+        }
     }
 
     pub fn game(&self) -> &Game {
@@ -65,5 +72,17 @@ impl State {
 
     pub fn screen(&self) -> Rect {
         self.screen
+    }
+
+    pub fn logs(&self) -> &[String] {
+        self.logs.as_ref()
+    }
+
+    pub fn push_log(&mut self, log: impl Into<String>) {
+        self.logs.push(log.into());
+    }
+
+    pub fn log_selected(&self) -> Option<usize> {
+        self.log_selected
     }
 }

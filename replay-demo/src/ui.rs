@@ -2,7 +2,7 @@ use tui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, Paragraph, Wrap},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
 
 use crate::{
@@ -95,11 +95,34 @@ fn draw_map(frame: &mut Frame<'_>, state: &State, map: Rect) {
     );
 }
 
-fn draw_logs(frame: &mut Frame<'_>, _: &State, logs: Rect) {
+fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
     let block = Block::default()
         .borders(Borders::all())
-        .border_style(Style::default());
-    frame.render_widget(block, logs);
+        .border_style(Style::default())
+        .title("Logs");
+
+    let logs: Vec<ListItem> = state
+        .logs()
+        .iter()
+        .enumerate()
+        .map(|(i, m)| {
+            let content = vec![Spans::from(Span::raw(format!("{:>3}: {}", i, m)))];
+            ListItem::new(content)
+        })
+        .collect();
+
+    let logs = List::new(logs).block(block);
+    let mut list_state = ListState::default();
+
+    let logs = if let Some(selected) = state.log_selected() {
+        list_state.select(Some(selected));
+        logs.highlight_symbol("> ")
+    } else {
+        list_state.select(state.logs().len().checked_sub(1));
+        logs
+    };
+
+    frame.render_stateful_widget(logs, logs_plane, &mut list_state);
 }
 
 fn draw_input(frame: &mut Frame<'_>, _: &State, input: Rect) {
@@ -109,7 +132,7 @@ fn draw_input(frame: &mut Frame<'_>, _: &State, input: Rect) {
     frame.render_widget(block, input);
 }
 
-pub fn draw_state(frame: &mut Frame<'_>, state: &State) {
+pub fn draw_state(frame: &mut Frame<'_>, state: &mut State) {
     let (map, logs, input) = split_screen(state.screen());
     draw_map(frame, state, map);
     draw_logs(frame, state, logs);
