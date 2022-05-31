@@ -1,6 +1,6 @@
 use std::{
     io::{self, Stdout},
-    time::Duration,
+    time::{Duration, Instant},
 };
 
 use crossterm::{
@@ -41,22 +41,31 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     let game = sys::Game::new(map);
     let mut state = sys::State::new(game, screen);
 
+    let tick_rate = Duration::from_secs(1);
+
+    let mut last_tick = Instant::now();
+    let timeout = tick_rate
+        .checked_sub(last_tick.elapsed())
+        .unwrap_or_else(|| Duration::from_secs(0));
+
     loop {
         terminal.draw(|frame| ui::draw_state(frame, &mut state))?;
 
-        if event::poll(Duration::from_secs(1))? {
+        if event::poll(timeout)? {
             let event = event::read()?;
             if let Event::Key(key) = event {
                 if let KeyCode::Char('q') = key.code {
                     return Ok(());
                 }
-                state.handle_event(event);
+                state.handle_key(key);
             }
         }
-
-        state.push_log(format!(
-            "Intercepted {:x}",
-            rand::thread_rng().gen::<u128>()
-        ));
+        if last_tick.elapsed() >= tick_rate {
+            state.push_log(format!(
+                "Intercepted {:x}",
+                rand::thread_rng().gen::<u128>()
+            ));
+            last_tick = Instant::now();
+        }
     }
 }

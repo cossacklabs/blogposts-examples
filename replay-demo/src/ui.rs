@@ -6,7 +6,7 @@ use tui::{
 };
 
 use crate::{
-    sys::{Coords, State},
+    sys::{Coords, Focus, State},
     Frame,
 };
 
@@ -125,11 +125,27 @@ fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
     frame.render_stateful_widget(logs, logs_plane, &mut list_state);
 }
 
-fn draw_input(frame: &mut Frame<'_>, _: &State, input: Rect) {
+fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
     let block = Block::default()
         .borders(Borders::all())
-        .border_style(Style::default());
-    frame.render_widget(block, input);
+        .border_style(Style::default())
+        .title("CLI");
+
+    if let Focus::Input = state.focus() {
+        let str = format!("> {}", state.input.buff.iter().collect::<String>());
+        let paragraph = Paragraph::new(str)
+            .style(Style::default().fg(Color::Green))
+            .block(block);
+
+        let y = input.y + 1; // border
+        let x = input.x + 1 + 2 // border + "> " + length
+            + state.input.index as u16;
+
+        frame.render_widget(paragraph, input);
+        frame.set_cursor(x, y);
+    } else {
+        frame.render_widget(block, input)
+    }
 }
 
 pub fn draw_state(frame: &mut Frame<'_>, state: &mut State) {
