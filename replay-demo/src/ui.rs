@@ -69,14 +69,7 @@ fn draw_map(frame: &mut Frame<'_>, state: &State, map: Rect) {
     let robot = state.game().robot();
     let enemy_base = state.game().enemy_base();
     let friend_base = state.game().friend_base();
-    frame.render_widget(
-        CharWidget {
-            c: '@',
-            style: Style::default().fg(Color::Yellow),
-            coords: robot,
-        },
-        inner_map,
-    );
+
     frame.render_widget(
         CharWidget {
             c: 'x',
@@ -90,6 +83,14 @@ fn draw_map(frame: &mut Frame<'_>, state: &State, map: Rect) {
             c: '$',
             style: Style::default().fg(Color::Green),
             coords: friend_base,
+        },
+        inner_map,
+    );
+    frame.render_widget(
+        CharWidget {
+            c: '@',
+            style: Style::default().fg(Color::Yellow),
+            coords: robot,
         },
         inner_map,
     );
@@ -128,14 +129,13 @@ fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
 fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
     let block = Block::default()
         .borders(Borders::all())
-        .border_style(Style::default())
-        .title("CLI");
+        .border_style(Style::default());
 
     if let Focus::Input = state.focus() {
         let str = format!("> {}", state.input.buff.iter().collect::<String>());
         let paragraph = Paragraph::new(str)
             .style(Style::default().fg(Color::Green))
-            .block(block);
+            .block(block.title("[INTERCEPTING]"));
 
         let y = input.y + 1; // border
         let x = input.x + 1 + 2 // border + "> " + length

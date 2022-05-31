@@ -1,4 +1,5 @@
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
+use crossterm::event::{KeyCode, KeyEvent};
+use rand::{distributions::Uniform, Rng};
 use tui::layout::Rect;
 
 use crate::crypto::{self, Key};
@@ -20,9 +21,21 @@ pub struct Game {
 
 impl Game {
     pub fn new(map: Rect) -> Self {
-        let robot = Coords { x: 0, y: 0 };
-        let enemy_base = Coords { x: 0, y: 1 };
-        let friend_base = Coords { x: 1, y: 0 };
+        let mut rng = rand::thread_rng();
+        let x = Uniform::new(0, map.width - 1);
+        let y = Uniform::new(0, map.height - 1);
+        let robot = Coords {
+            x: rng.sample(&x),
+            y: rng.sample(&y),
+        };
+        let enemy_base = Coords {
+            x: rng.sample(&x),
+            y: rng.sample(&y),
+        };
+        let friend_base = Coords {
+            x: rng.sample(&x),
+            y: rng.sample(&y),
+        };
         let key = crypto::random_key();
         Self {
             map,
@@ -48,6 +61,28 @@ impl Game {
     pub fn friend_base(&self) -> Coords {
         self.friend_base
     }
+
+    pub fn input_encrypted(&mut self, packet: &[u8]) -> anyhow::Result<()> {
+        let ignoring_packet = "ignoring the packet";
+        let decrypted = match crypto::open(&self.key, packet) {
+            Ok(ok) => ok,
+            Err(_) => anyhow::bail!(ignoring_packet),
+        };
+
+        match decrypted.as_slice() {
+            b"u" => self.robot.y = self.robot.y.saturating_sub(1),
+            b"d" => self.robot.y = u16::min(self.robot.y + 1, self.map.height),
+            b"l" => self.robot.x = self.robot.x.saturating_sub(1),
+            b"r" => self.robot.x = u16::min(self.robot.x + 1, self.map.width),
+            _ => anyhow::bail!(ignoring_packet),
+        }
+
+        Ok(())
+    }
+
+    pub fn encrypt(&self, data: &[u8]) -> anyhow::Result<Vec<u8>> {
+        crypto::seal(&self.key, data)
+    }
 }
 
 #[derive(Default)]
@@ -63,7 +98,7 @@ pub enum Focus {
 }
 
 pub struct State {
-    game: Game,
+    pub game: Game,
     screen: Rect,
     logs: Vec<String>,
     log_selected: Option<usize>,
@@ -103,6 +138,23 @@ impl State {
         self.focus
     }
 
+    pub fn handle_command(&mut self, line: &str) {
+        let parts = line.split_whitespace().collect::<Vec<&str>>();
+        if parts.len() != 2 || parts[0] != "send" {
+            self.push_log("ERROR: supported syntax is `send <hex>`");
+            return;
+        }
+        let packet = match hex::decode(parts[1]) {
+            Ok(ok) => ok,
+            Err(err) => {
+                self.push_log(format!("ERROR: {}", err));
+                return;
+            }
+        };
+
+        self.send(&packet);
+    }
+
     pub fn handle_key(&mut self, key: KeyEvent) {
         let last_log = self.logs.len().saturating_sub(1);
         match key.code {
@@ -133,7 +185,7 @@ impl State {
                 KeyCode::Enter => {
                     let line: String = std::mem::take(&mut self.input.buff).into_iter().collect();
                     self.input.index = 0;
-                    self.push_log(format!("received {:?}", line))
+                    self.handle_command(&line);
                 }
                 KeyCode::Char(c) => {
                     self.input.buff.insert(self.input.index, c);
@@ -159,5 +211,12 @@ impl State {
 
     pub fn log_selected(&self) -> Option<usize> {
         self.log_selected
+    }
+
+    pub fn send(&mut self, packet: &[u8]) {
+        self.push_log(format!("INTERCEPTED: {}", hex::encode(packet)));
+        if let Err(err) = self.game.input_encrypted(packet) {
+            self.push_log(format!("ERROR: {}", err))
+        }
     }
 }

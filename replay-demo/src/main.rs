@@ -8,7 +8,8 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use rand::Rng;
+use rand::prelude::SliceRandom;
+use sys::Focus;
 use tui::backend::CrosstermBackend;
 
 mod crypto;
@@ -41,7 +42,7 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     let game = sys::Game::new(map);
     let mut state = sys::State::new(game, screen);
 
-    let tick_rate = Duration::from_secs(1);
+    let tick_rate = Duration::from_secs(3);
 
     let mut last_tick = Instant::now();
     let timeout = tick_rate
@@ -60,11 +61,13 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
                 state.handle_key(key);
             }
         }
-        if last_tick.elapsed() >= tick_rate {
-            state.push_log(format!(
-                "Intercepted {:x}",
-                rand::thread_rng().gen::<u128>()
-            ));
+        if matches!(state.focus(), Focus::None) && last_tick.elapsed() >= tick_rate {
+            let mut rng = rand::thread_rng();
+            let action = ["u", "d", "l", "r"]
+                .choose(&mut rng)
+                .expect("array is non empty");
+            let packet = state.game.encrypt(action.as_bytes())?;
+            state.send(&packet);
             last_tick = Instant::now();
         }
     }
