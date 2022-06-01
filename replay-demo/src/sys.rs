@@ -1,89 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent};
-use rand::{distributions::Uniform, Rng};
 use tui::layout::Rect;
 
-use crate::crypto::{self, Key};
-
-#[derive(Clone, Copy)]
-pub struct Coords {
-    pub x: u16,
-    pub y: u16,
-}
-
-pub struct Game {
-    map: Rect,
-    robot: Coords,
-    enemy_base: Coords,
-    friend_base: Coords,
-
-    key: Key,
-}
-
-impl Game {
-    pub fn new(map: Rect) -> Self {
-        let mut rng = rand::thread_rng();
-        let x = Uniform::new(0, map.width - 1);
-        let y = Uniform::new(0, map.height - 1);
-        let robot = Coords {
-            x: rng.sample(&x),
-            y: rng.sample(&y),
-        };
-        let enemy_base = Coords {
-            x: rng.sample(&x),
-            y: rng.sample(&y),
-        };
-        let friend_base = Coords {
-            x: rng.sample(&x),
-            y: rng.sample(&y),
-        };
-        let key = crypto::random_key();
-        Self {
-            map,
-            robot,
-            enemy_base,
-            friend_base,
-            key,
-        }
-    }
-
-    pub fn map(&self) -> Rect {
-        self.map
-    }
-
-    pub fn robot(&self) -> Coords {
-        self.robot
-    }
-
-    pub fn enemy_base(&self) -> Coords {
-        self.enemy_base
-    }
-
-    pub fn friend_base(&self) -> Coords {
-        self.friend_base
-    }
-
-    pub fn input_encrypted(&mut self, packet: &[u8]) -> anyhow::Result<()> {
-        let ignoring_packet = "ignoring the packet";
-        let decrypted = match crypto::open(&self.key, packet) {
-            Ok(ok) => ok,
-            Err(_) => anyhow::bail!(ignoring_packet),
-        };
-
-        match decrypted.as_slice() {
-            b"u" => self.robot.y = self.robot.y.saturating_sub(1),
-            b"d" => self.robot.y = u16::min(self.robot.y + 1, self.map.height),
-            b"l" => self.robot.x = self.robot.x.saturating_sub(1),
-            b"r" => self.robot.x = u16::min(self.robot.x + 1, self.map.width),
-            _ => anyhow::bail!(ignoring_packet),
-        }
-
-        Ok(())
-    }
-
-    pub fn encrypt(&self, data: &[u8]) -> anyhow::Result<Vec<u8>> {
-        crypto::seal(&self.key, data)
-    }
-}
+use crate::game::Game;
 
 #[derive(Default)]
 pub struct InputField {
@@ -254,6 +172,7 @@ impl State {
                     0
                 })
             }
+            KeyCode::Home => self.log_selected = None,
             _ => {}
         }
 

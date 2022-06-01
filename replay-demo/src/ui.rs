@@ -1,18 +1,23 @@
 use tui::{
     layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Style},
+    style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
 
 use crate::{
-    sys::{Coords, Focus, State},
+    game::Coords,
+    sys::{Focus, State},
     Frame,
 };
 
 pub type Map = Rect;
 pub type Input = Rect;
 pub type Logs = Rect;
+
+pub fn inner(r: Rect) -> Rect {
+    Block::default().borders(Borders::all()).inner(r)
+}
 
 pub fn split_screen(screen: Rect) -> (Map, Logs, Input) {
     let input_height = 3;
@@ -66,30 +71,31 @@ fn draw_map(frame: &mut Frame<'_>, state: &State, map: Rect) {
 
     frame.render_widget(paragraph, map);
 
-    let robot = state.game().robot();
-    let enemy_base = state.game().enemy_base();
-    let friend_base = state.game().friend_base();
+    let game = state.game();
+    let robot = game.robot();
+    let base = game.base();
 
-    frame.render_widget(
-        CharWidget {
-            c: 'x',
-            style: Style::default().fg(Color::Red),
-            coords: enemy_base,
-        },
-        inner_map,
-    );
+    let robot_color = if let Focus::Input = state.focus() {
+        Color::Green
+    } else {
+        Color::Red
+    };
+
     frame.render_widget(
         CharWidget {
             c: '$',
             style: Style::default().fg(Color::Green),
-            coords: friend_base,
+            coords: base,
         },
         inner_map,
     );
+
     frame.render_widget(
         CharWidget {
             c: '@',
-            style: Style::default().fg(Color::Yellow),
+            style: Style::default()
+                .fg(robot_color)
+                .add_modifier(Modifier::BOLD),
             coords: robot,
         },
         inner_map,
@@ -107,7 +113,7 @@ fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
         .iter()
         .enumerate()
         .map(|(i, m)| {
-            let content = vec![Spans::from(Span::raw(format!("{:>3}: {}", i, m)))];
+            let content = format!("{:>3}: {}", i, m);
             ListItem::new(content)
         })
         .collect();

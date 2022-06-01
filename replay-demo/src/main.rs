@@ -8,13 +8,13 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use rand::prelude::SliceRandom;
 use sys::Focus;
 use tui::backend::CrosstermBackend;
 
 mod crypto;
+mod game;
 mod sys;
-pub mod ui;
+mod ui;
 
 pub type Terminal = tui::Terminal<CrosstermBackend<Stdout>>;
 pub type Frame<'a> = tui::Frame<'a, CrosstermBackend<Stdout>>;
@@ -39,7 +39,9 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     let screen = terminal.size()?;
     let (map, _, _) = ui::split_screen(screen);
 
-    let game = sys::Game::new(map);
+    let inner_map = ui::inner(map);
+
+    let game = game::Game::new(inner_map);
     let mut state = sys::State::new(game, screen);
 
     let tick_rate = Duration::from_secs(3);
@@ -62,11 +64,7 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
             }
         }
         if matches!(state.focus(), Focus::None) && last_tick.elapsed() >= tick_rate {
-            let mut rng = rand::thread_rng();
-            let action = ["u", "d", "l", "r"]
-                .choose(&mut rng)
-                .expect("array is non empty");
-            let packet = state.game.encrypt(action.as_bytes())?;
+            let packet = state.game.tick_enemy()?;
             state.send(&packet);
             last_tick = Instant::now();
         }
