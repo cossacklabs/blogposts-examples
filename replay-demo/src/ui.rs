@@ -32,7 +32,7 @@ pub fn split_screen(screen: Rect) -> (Map, Logs, Input) {
 
     let horizontal = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+        .constraints([Constraint::Percentage(40), Constraint::Percentage(60)])
         .split(vertical[0]);
 
     (horizontal[0], horizontal[1], vertical[1])
@@ -112,8 +112,15 @@ fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
         .logs()
         .iter()
         .enumerate()
-        .map(|(i, m)| {
-            let content = format!("{:>3}: {}", i, m);
+        .map(|(i, log)| {
+            let color = if log.contains("INTERCEPTED") {
+                Color::Yellow
+            } else if log.contains("ERROR") {
+                Color::Red
+            } else {
+                Color::White
+            };
+            let content = Span::styled(format!("{:>3}: {}", i, log), Style::default().fg(color));
             ListItem::new(content)
         })
         .collect();
