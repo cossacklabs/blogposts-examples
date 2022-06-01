@@ -113,8 +113,8 @@ fn draw_logs(frame: &mut Frame<'_>, state: &mut State, logs_plane: Rect) {
         .iter()
         .enumerate()
         .map(|(i, log)| {
-            let color = if log.contains("INTERCEPTED") {
-                Color::Yellow
+            let color = if log.contains("CONNECTED") | log.contains("SENT") {
+                Color::Green
             } else if log.contains("ERROR") {
                 Color::Red
             } else {

@@ -1,5 +1,5 @@
 use rand::Rng;
-use tui::layout::{Margin, Rect};
+use tui::layout::Rect;
 
 use crate::{
     crypto::{self, Key},

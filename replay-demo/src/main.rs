@@ -63,6 +63,7 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
         }
         if matches!(state.focus(), Focus::None) && last_tick.elapsed() >= tick_rate {
             let packet = state.game.tick_enemy()?;
+            state.push_log(format!("EAVESDROPPED: {}", hex::encode(&packet)));
             state.send(&packet);
             last_tick = Instant::now();
         }

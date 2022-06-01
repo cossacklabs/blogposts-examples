@@ -144,7 +144,7 @@ impl State {
                 return;
             }
         };
-
+        self.push_log(format!("SENT: {}", hex::encode(&packet)));
         self.send(&packet);
     }
 
@@ -172,12 +172,14 @@ impl State {
         match self.focus {
             Focus::None => {
                 if let KeyCode::Char('i') = key.code {
-                    self.focus = Focus::Input
+                    self.focus = Focus::Input;
+                    self.push_log("CONNECTED");
                 }
             }
             Focus::Input => {
                 if let KeyCode::Esc = key.code {
-                    self.focus = Focus::None
+                    self.focus = Focus::None;
+                    self.push_log("DISCONNECTED");
                 } else if let Some(cmd) = self.input.handle_key(key) {
                     self.handle_command(&cmd);
                 }
@@ -190,7 +192,6 @@ impl State {
     }
 
     pub fn send(&mut self, packet: &[u8]) {
-        self.push_log(format!("INTERCEPTED: {}", hex::encode(packet)));
         if let Err(err) = self.game.input_encrypted(packet) {
             self.push_log(format!("ERROR: {}", err))
         }
