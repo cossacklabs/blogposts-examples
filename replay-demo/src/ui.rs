@@ -132,14 +132,14 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
         .border_style(Style::default());
 
     if let Focus::Input = state.focus() {
-        let str = format!("> {}", state.input.buff.iter().collect::<String>());
+        let str = format!("> {}", state.input.line());
         let paragraph = Paragraph::new(str)
             .style(Style::default().fg(Color::Green))
             .block(block.title("[INTERCEPTING]"));
 
         let y = input.y + 1; // border
         let x = input.x + 1 + 2 // border + "> " + length
-            + state.input.index as u16;
+            + state.input.cursor() as u16;
 
         frame.render_widget(paragraph, input);
         frame.set_cursor(x, y);

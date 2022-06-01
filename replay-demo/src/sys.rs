@@ -87,8 +87,90 @@ impl Game {
 
 #[derive(Default)]
 pub struct InputField {
-    pub buff: Vec<char>,
-    pub index: usize,
+    buff: Vec<char>,
+    cursor: usize,
+    history: Vec<Vec<char>>,
+    history_index: Option<usize>,
+}
+
+impl InputField {
+    fn take_line(&mut self) -> String {
+        let line = self.line();
+        let line_vec = std::mem::take(&mut self.buff);
+        let line = line.trim().to_string();
+        if !line.is_empty() {
+            self.history.push(line_vec);
+        }
+        line
+    }
+
+    fn handle_key(&mut self, key: KeyEvent) -> Option<String> {
+        match key.code {
+            KeyCode::Enter => {
+                self.cursor = 0;
+                self.history_index = None;
+                let line = self.take_line();
+                if line.is_empty() {
+                    return None;
+                } else {
+                    return Some(line);
+                }
+            }
+            KeyCode::Char(c) => {
+                self.buff.insert(self.cursor, c);
+                self.cursor += 1;
+            }
+            KeyCode::Left => self.cursor = self.cursor.saturating_sub(1),
+            KeyCode::Right => {
+                let last_char = self.buff.len();
+                self.cursor = usize::min(self.cursor + 1, last_char);
+            }
+            KeyCode::Backspace => {
+                self.cursor = self.cursor.saturating_sub(1);
+                if self.cursor < self.buff.len() {
+                    self.buff.remove(self.cursor);
+                }
+            }
+            KeyCode::Up => {
+                let index = if let Some(index) = self.history_index {
+                    index.saturating_sub(1)
+                } else if self.history.is_empty() {
+                    return None;
+                } else {
+                    let index = self.history.len() - 1;
+                    self.take_line();
+                    index
+                };
+                self.history_index = Some(index);
+                self.buff = self.history[index].clone();
+                self.cursor = self.buff.len();
+            }
+
+            KeyCode::Down => {
+                if let Some(index) = self.history_index {
+                    if index == self.history.len() - 1 {
+                        return None;
+                    }
+                    let index = index + 1;
+
+                    self.buff = self.history[index].clone();
+                    self.cursor = self.buff.len();
+                    self.history_index = Some(index);
+                }
+            }
+
+            _ => {}
+        }
+        None
+    }
+
+    pub fn cursor(&self) -> usize {
+        self.cursor
+    }
+
+    pub fn line(&self) -> String {
+        self.buff.iter().collect()
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -181,31 +263,13 @@ impl State {
                     self.focus = Focus::Input
                 }
             }
-            Focus::Input => match key.code {
-                KeyCode::Enter => {
-                    let line: String = std::mem::take(&mut self.input.buff).into_iter().collect();
-                    self.input.index = 0;
-                    self.handle_command(&line);
+            Focus::Input => {
+                if let KeyCode::Esc = key.code {
+                    self.focus = Focus::None
+                } else if let Some(cmd) = self.input.handle_key(key) {
+                    self.handle_command(&cmd);
                 }
-                KeyCode::Char(c) => {
-                    self.input.buff.insert(self.input.index, c);
-                    self.input.index += 1;
-                }
-                KeyCode::Left => self.input.index = self.input.index.saturating_sub(1),
-                KeyCode::Right => {
-                    let last_char = self.input.buff.len();
-                    self.input.index = usize::min(self.input.index + 1, last_char);
-                }
-                KeyCode::Backspace => {
-                    self.input.index = self.input.index.saturating_sub(1);
-                    if self.input.index < self.input.buff.len() {
-                        self.input.buff.remove(self.input.index);
-                    }
-                }
-                KeyCode::Esc => self.focus = Focus::None,
-
-                _ => {}
-            },
+            }
         }
     }
 
