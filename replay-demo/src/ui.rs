@@ -163,25 +163,65 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
     }
 }
 
+fn centered_rect(width: u16, height: u16, r: Rect) -> Rect {
+    let (grid_width, grid_height) = (r.width, r.height);
+    let vertical = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(grid_height / 2 - height / 2),
+            Constraint::Length(height),
+            Constraint::Length(grid_height / 2 - height / 2),
+        ])
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Length(grid_width / 2 - width / 2),
+            Constraint::Length(width),
+            Constraint::Length(grid_width / 2 - width / 2),
+        ])
+        .split(vertical[1])[1]
+}
+
 fn draw_screen_too_small(frame: &mut Frame<'_>, screen: Rect) {
     let block = Block::default()
         .borders(Borders::all())
         .style(Style::default().bg(Color::Blue));
     frame.render_widget(block, screen);
 
-    let half_height = (screen.height - 1) / 2;
-    let layout = Layout::default()
-        .constraints([
-            Constraint::Length(half_height),
-            Constraint::Length(1),
-            Constraint::Length(half_height),
-        ])
-        .split(screen);
+    let center = centered_rect(screen.width, 1, screen);
     let paragraph = Paragraph::new("Sorry, your screen is too small").alignment(Alignment::Center);
-    frame.render_widget(paragraph, layout[1]);
+    frame.render_widget(paragraph, center);
+}
+
+fn draw_win_screen(frame: &mut Frame<'_>, screen: Rect) {
+    let spans = vec![
+        Spans::from("Congratulations!\n"),
+        Spans::from("You've solved the game using the replay attacks.\n"),
+        Spans::from("Despite the fact that integrity of the ciphertext was provided,\n"),
+        Spans::from("it wasn't enough to protect against such attacks.\n"),
+        Spans::from("\n"),
+        Spans::from("Press [q] to quit.\n"),
+    ];
+
+    let block = Block::default()
+        .borders(Borders::all())
+        .style(Style::default().bg(Color::Blue));
+    frame.render_widget(block, screen);
+
+    let center = centered_rect(screen.width, spans.len() as u16, screen);
+    let paragraph = Paragraph::new(spans)
+        .alignment(Alignment::Center)
+        .wrap(Wrap { trim: true });
+    frame.render_widget(paragraph, center);
 }
 
 pub fn draw_state(frame: &mut Frame<'_>, state: &mut State) {
+    if state.game.is_finished() {
+        draw_win_screen(frame, frame.size());
+        return;
+    }
     let game_map = state.game().map();
     let input_height = 3;
     let map_height = game_map.height;

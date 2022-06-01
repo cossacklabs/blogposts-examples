@@ -52,6 +52,16 @@ fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     loop {
         terminal.draw(|frame| ui::draw_state(frame, &mut state))?;
 
+        if state.game().is_finished() {
+            loop {
+                if let Event::Key(key) = event::read()? {
+                    if let KeyCode::Char('q') = key.code {
+                        return Ok(());
+                    }
+                }
+            }
+        }
+
         if event::poll(timeout)? {
             let event = event::read()?;
             if let Event::Key(key) = event {
