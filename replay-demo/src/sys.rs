@@ -1,5 +1,4 @@
 use crossterm::event::{KeyCode, KeyEvent};
-use tui::layout::Rect;
 
 use crate::game::Game;
 
@@ -99,7 +98,6 @@ pub enum Focus {
 
 pub struct State {
     pub game: Game,
-    screen: Rect,
     logs: Vec<String>,
     log_selected: Option<usize>,
     focus: Focus,
@@ -107,10 +105,9 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(game: Game, screen: Rect) -> Self {
+    pub fn new(game: Game) -> Self {
         Self {
             game,
-            screen,
             logs: vec![],
             log_selected: None,
             focus: Focus::None,
@@ -120,10 +117,6 @@ impl State {
 
     pub fn game(&self) -> &Game {
         &self.game
-    }
-
-    pub fn screen(&self) -> Rect {
-        self.screen
     }
 
     pub fn logs(&self) -> &[String] {

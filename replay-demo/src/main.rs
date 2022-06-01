@@ -37,12 +37,10 @@ fn main() -> anyhow::Result<()> {
 
 fn run_app(terminal: &mut Terminal) -> anyhow::Result<()> {
     let screen = terminal.size()?;
-    let (map, _, _) = ui::split_screen(screen);
+    let map = ui::map_size(screen);
 
-    let inner_map = ui::inner(map);
-
-    let game = game::Game::new(inner_map);
-    let mut state = sys::State::new(game, screen);
+    let game = game::Game::new(map);
+    let mut state = sys::State::new(game);
 
     let tick_rate = Duration::from_secs(3);
 

@@ -2,7 +2,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph, Wrap},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
 
 use crate::{
@@ -12,14 +12,12 @@ use crate::{
 };
 
 pub type Map = Rect;
-pub type Input = Rect;
-pub type Logs = Rect;
 
 pub fn inner(r: Rect) -> Rect {
     Block::default().borders(Borders::all()).inner(r)
 }
 
-pub fn split_screen(screen: Rect) -> (Map, Logs, Input) {
+pub fn map_size(screen: Rect) -> Map {
     let input_height = 3;
     let map_height = screen.height.saturating_sub(input_height);
     let vertical = Layout::default()
@@ -35,7 +33,7 @@ pub fn split_screen(screen: Rect) -> (Map, Logs, Input) {
         .constraints([Constraint::Percentage(40), Constraint::Percentage(60)])
         .split(vertical[0]);
 
-    (horizontal[0], horizontal[1], vertical[1])
+    horizontal[0]
 }
 
 struct CharWidget {
@@ -165,9 +163,51 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
     }
 }
 
+fn draw_screen_too_small(frame: &mut Frame<'_>, screen: Rect) {
+    let block = Block::default()
+        .borders(Borders::all())
+        .style(Style::default().bg(Color::Blue));
+    frame.render_widget(block, screen);
+
+    let half_height = (screen.height - 1) / 2;
+    let layout = Layout::default()
+        .constraints([
+            Constraint::Length(half_height),
+            Constraint::Length(1),
+            Constraint::Length(half_height),
+        ])
+        .split(screen);
+    let paragraph = Paragraph::new("Sorry, your screen is too small").alignment(Alignment::Center);
+    frame.render_widget(paragraph, layout[1]);
+}
+
 pub fn draw_state(frame: &mut Frame<'_>, state: &mut State) {
-    let (map, logs, input) = split_screen(state.screen());
-    draw_map(frame, state, map);
-    draw_logs(frame, state, logs);
-    draw_input(frame, state, input);
+    let game_map = state.game().map();
+    let input_height = 3;
+    let map_height = game_map.height;
+    let vertical = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(map_height),
+            Constraint::Length(input_height),
+        ])
+        .split(frame.size());
+
+    let horizontal = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Length(game_map.width),
+            Constraint::Percentage(100),
+        ])
+        .split(vertical[0]);
+
+    let map = horizontal[0];
+
+    if map.width < game_map.width || map.height < game_map.height {
+        draw_screen_too_small(frame, frame.size())
+    } else {
+        draw_map(frame, state, horizontal[0]);
+        draw_logs(frame, state, horizontal[1]);
+        draw_input(frame, state, vertical[1]);
+    }
 }

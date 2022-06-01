@@ -1,7 +1,10 @@
 use rand::Rng;
-use tui::layout::Rect;
+use tui::layout::{Margin, Rect};
 
-use crate::crypto::{self, Key};
+use crate::{
+    crypto::{self, Key},
+    ui,
+};
 
 const NEXT_TARGET_RADIUS: u16 = 10;
 
@@ -13,6 +16,7 @@ pub struct Coords {
 
 pub struct Game {
     map: Rect,
+    inner_map: Rect,
     robot: Coords,
     robot_target: Coords,
     base: Coords,
@@ -22,16 +26,18 @@ pub struct Game {
 
 impl Game {
     pub fn new(map: Rect) -> Self {
+        let inner_map = ui::inner(map);
+
         let mut rng = rand::thread_rng();
         let robot = Coords {
-            x: rng.gen_range(0..map.width),
-            y: rng.gen_range(0..map.height),
+            x: rng.gen_range(0..inner_map.width),
+            y: rng.gen_range(0..inner_map.height),
         };
 
         let friend_base = loop {
             let coords = Coords {
-                x: rng.gen_range(0..map.width),
-                y: rng.gen_range(0..map.height),
+                x: rng.gen_range(0..inner_map.width),
+                y: rng.gen_range(0..inner_map.height),
             };
             if coords != robot {
                 break coords;
@@ -40,6 +46,7 @@ impl Game {
         let key = crypto::random_key();
         Self {
             map,
+            inner_map,
             robot,
             base: friend_base,
             key,
@@ -79,7 +86,7 @@ impl Game {
 
     pub fn tick_enemy(&mut self) -> anyhow::Result<Vec<u8>> {
         if self.robot == self.robot_target {
-            self.robot_target = random_in_radius(self.robot, NEXT_TARGET_RADIUS, self.map);
+            self.robot_target = random_in_radius(self.robot, NEXT_TARGET_RADIUS, self.inner_map);
         }
 
         let (robot, target) = (self.robot, self.robot_target);
@@ -103,6 +110,10 @@ impl Game {
 
     pub fn is_finished(&self) -> bool {
         self.robot == self.base
+    }
+
+    pub fn map(&self) -> Rect {
+        self.map
     }
 }
 
