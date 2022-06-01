@@ -1,8 +1,8 @@
 use tui::{
-    layout::{Constraint, Direction, Layout, Rect},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap},
+    widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph, Wrap},
 };
 
 use crate::{
@@ -57,7 +57,9 @@ impl tui::widgets::Widget for CharWidget {
 fn draw_map(frame: &mut Frame<'_>, state: &State, map: Rect) {
     let block = Block::default()
         .borders(Borders::ALL)
-        .border_style(Style::default());
+        .border_style(Style::default())
+        .title("Map")
+        .title_alignment(Alignment::Center);
 
     let inner_map = block.inner(map);
 
@@ -145,13 +147,15 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
         .border_style(Style::default());
 
     if let Focus::Input = state.focus() {
-        let str = format!("> {}", state.input.line());
+        const PROMPT: &str = "> ";
+        let str = format!("{PROMPT}{}", state.input.line());
         let paragraph = Paragraph::new(str)
             .style(Style::default().fg(Color::Green))
-            .block(block.title("[INTERCEPTING]"));
+            .block(block.title("[CONNECTED]"));
 
         let y = input.y + 1; // border
-        let x = input.x + 1 + 2 // border + "> " + length
+        let x = input.x + 1  // border
+            + PROMPT.len() as u16
             + state.input.cursor() as u16;
 
         frame.render_widget(paragraph, input);
