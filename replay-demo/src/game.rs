@@ -86,6 +86,7 @@ impl Game {
 
     pub fn tick_enemy(&mut self) -> anyhow::Result<Vec<u8>> {
         if self.robot == self.robot_target {
+            // There is a change that the robot will win the game by itself ;)
             self.robot_target = random_in_radius(self.robot, NEXT_TARGET_RADIUS, self.inner_map);
         }
 

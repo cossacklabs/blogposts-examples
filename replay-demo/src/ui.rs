@@ -146,7 +146,7 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
 
     if let Focus::Input = state.focus() {
         const PROMPT: &str = "> ";
-        let str = format!("{PROMPT}{}", state.input.line());
+        let str = format!("{PROMPT}{}", state.input().line());
         let paragraph = Paragraph::new(str)
             .style(Style::default().fg(Color::Green))
             .block(block.title("[CONNECTED]"));
@@ -154,7 +154,7 @@ fn draw_input(frame: &mut Frame<'_>, state: &State, input: Rect) {
         let y = input.y + 1; // border
         let x = input.x + 1  // border
             + PROMPT.len() as u16
-            + state.input.cursor() as u16;
+            + state.input().cursor() as u16;
 
         frame.render_widget(paragraph, input);
         frame.set_cursor(x, y);
@@ -218,7 +218,7 @@ fn draw_win_screen(frame: &mut Frame<'_>, screen: Rect) {
 }
 
 pub fn draw_state(frame: &mut Frame<'_>, state: &mut State) {
-    if state.game.is_finished() {
+    if state.game().is_finished() {
         draw_win_screen(frame, frame.size());
         return;
     }

@@ -97,11 +97,11 @@ pub enum Focus {
 }
 
 pub struct State {
-    pub game: Game,
+    game: Game,
     logs: Vec<String>,
     log_selected: Option<usize>,
     focus: Focus,
-    pub input: InputField,
+    input: InputField,
 }
 
 impl State {
@@ -195,5 +195,13 @@ impl State {
         if let Err(err) = self.game.input_encrypted(packet) {
             self.push_log(format!("ERROR: {}", err))
         }
+    }
+
+    pub fn input(&self) -> &InputField {
+        &self.input
+    }
+
+    pub fn game_mut(&mut self) -> &mut Game {
+        &mut self.game
     }
 }
