@@ -1,0 +1,26 @@
+[package]
+name = "cbc-repeated-iv"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# need to use aes
+aes = "0.8.1"
+
+# to return structure `anyhow::Result<()>`
+anyhow = "1.0.57"
+
+# to use cbc. Need specifically with this feature
+# It allows us to use `decrypt_padded_vec_mut`
+cbc = { version = "0.1.2", features = ["alloc"] }
+
+# To paint console output
+colored = "2.0.0"
+
+# To generate random KEY and IV when the game starts
+rand = "0.8.5"
+
+# To encode CTs as hex strings
+hex = "0.4.3"
