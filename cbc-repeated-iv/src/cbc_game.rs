@@ -8,9 +8,11 @@ type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
 use rand::Rng;
 
+const BLOCK_SIZE: usize = 16;
+
 pub struct CBCGame {
-    key: [u8; 16],
-    iv: [u8; 16],
+    key: [u8; BLOCK_SIZE],
+    iv: [u8; BLOCK_SIZE],
 
     known_plaintext: Vec<u8>,
     known_ciphertext: Vec<u8>,
@@ -30,8 +32,8 @@ impl Default for CBCGame {
 impl CBCGame {
     pub fn new() -> Self {
         Self {
-            key: [0; 16],
-            iv: [0; 16],
+            key: [0; BLOCK_SIZE],
+            iv: [0; BLOCK_SIZE],
 
             known_plaintext: br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "S"}"#
                 .to_vec(),
@@ -132,9 +134,9 @@ impl CBCGame {
 
     fn print_known_texts(&self) {
         let (formatted_blocks_pt, formatted_known_pt) =
-            CBCGame::format_blocks_utf8(&self.known_plaintext, 16);
+            CBCGame::format_blocks_utf8(&self.known_plaintext);
         let (formatted_blocks_ct, formatted_known_ct) =
-            CBCGame::format_blocks_hex(&self.known_ciphertext, 16);
+            CBCGame::format_blocks_hex(&self.known_ciphertext);
 
         println!("Getting corresponding known CT to leaked PT:");
         println!("Here's leaked plaintext:");
@@ -146,7 +148,7 @@ impl CBCGame {
 
         println!("Let's wait and eavesdrop other CTs:");
         for eavesdropped_ciphertext in &self.ciphertexts_vec {
-            let formatted_ct = CBCGame::format_blocks_hex(eavesdropped_ciphertext, 16).1;
+            let formatted_ct = CBCGame::format_blocks_hex(eavesdropped_ciphertext).1;
             println!("{formatted_ct}");
         }
     }
@@ -313,11 +315,11 @@ impl CBCGame {
         // Format and prettify Known CT and PT
         // Also do the same procedures to an eavesdropped packets
         let (formatted_blocks_pt, formatted_known_pt) =
-            CBCGame::format_blocks_utf8(&self.known_plaintext, 16);
+            CBCGame::format_blocks_utf8(&self.known_plaintext);
         let (formatted_blocks_ct, formatted_known_ct) =
-            CBCGame::format_blocks_hex(&self.known_ciphertext, 16);
-        let formatted_eavesdropped_ct = CBCGame::format_blocks_hex(eavesdropped_packet, 16).1;
-        let formatted_decrypted_eavesdrop = CBCGame::format_blocks_utf8(decrypted_eavesdrop, 16).1;
+            CBCGame::format_blocks_hex(&self.known_ciphertext);
+        let formatted_eavesdropped_ct = CBCGame::format_blocks_hex(eavesdropped_packet).1;
+        let formatted_decrypted_eavesdrop = CBCGame::format_blocks_utf8(decrypted_eavesdrop).1;
 
         println!("{}", ascii_art.on_color(Color::Green));
         println!("\n{example_desc_start}:");
@@ -344,21 +346,21 @@ impl CBCGame {
     // Formatting PT:
     // input_vec: input plaintext as vector
     // block_size: size of chunks
-    // Example:                 Here's my small plaintext as an input to this function  , 16
+    // Example:                 Here's my small plaintext as an input to this function
     // format_blocks_utf8.0:   |    Block #0    |    Block #1    |    Block #2    |    Block #3    |
     // format_blocks_utf8.1:   |Here's my small |plaintext as an |input to this fu|nction██████████|
-    fn format_blocks_utf8(input_vec: &[u8], block_size: usize) -> (String, String) {
+    fn format_blocks_utf8(input_vec: &[u8]) -> (String, String) {
         let mut formatted_blocks = String::new();
         let mut formatted_input = String::new();
 
-        for (block_num, block) in input_vec.chunks(block_size).enumerate() {
+        for (block_num, block) in input_vec.chunks(BLOCK_SIZE).enumerate() {
             write!(formatted_blocks, "|    Block #{}    ", block_num)
                 .expect("Write to a string cannot fail");
             write!(
                 formatted_input,
                 "|{}{}",
                 String::from_utf8_lossy(block),
-                "█".repeat(block_size - block.len())
+                "█".repeat(BLOCK_SIZE - block.len())
             )
             .expect("Write to a string cannot fail");
         }
@@ -370,11 +372,11 @@ impl CBCGame {
 
     // Same as format_blocks_utf8, but created for formatting CTs
     // It converts input_vec to hex-encoded string
-    fn format_blocks_hex(input_vec: &[u8], block_size: usize) -> (String, String) {
+    fn format_blocks_hex(input_vec: &[u8]) -> (String, String) {
         let mut formatted_blocks = String::new();
         let mut formatted_input = String::new();
 
-        for (block_num, block) in input_vec.chunks(block_size).enumerate() {
+        for (block_num, block) in input_vec.chunks(BLOCK_SIZE).enumerate() {
             write!(
                 formatted_blocks,
                 "|            Block #{}            ",
@@ -385,7 +387,7 @@ impl CBCGame {
                 formatted_input,
                 "|{}{}",
                 hex::encode(block),
-                "█".repeat(block_size - block.len())
+                "█".repeat(BLOCK_SIZE - block.len())
             )
             .expect("Write to a string cannot fail");
         }
