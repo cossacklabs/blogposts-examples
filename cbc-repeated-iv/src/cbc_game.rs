@@ -1,3 +1,4 @@
+use aes::cipher::block_padding::UnpadError;
 use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
 use colored::Color::TrueColor;
 use colored::{Color, Colorize};
@@ -127,11 +128,9 @@ impl CBCGame {
             .encrypt_padded_vec_mut::<Pkcs7>(plaintext_vec)
     }
 
-    fn decrypt_text(&self, ciphertext_vec: &[u8]) -> Vec<u8> {
+    fn decrypt_text(&self, ciphertext_vec: &[u8]) -> Result<Vec<u8>, UnpadError> {
         Aes128CbcDec::new(&self.key.into(), &self.iv.into())
             .decrypt_padded_vec_mut::<Pkcs7>(ciphertext_vec)
-            .ok()
-            .unwrap()
     }
 
     fn print_known_texts(&self) {
@@ -163,7 +162,9 @@ impl CBCGame {
         // Let's take an example eavesdropped packet
         // And decrypt it so we can assure, that our presumptions are correct
         let eavesdropped_packet = &self.ciphertexts_vec[iter];
-        let decrypted_eavesdrop = &self.decrypt_text(eavesdropped_packet);
+        let decrypted_eavesdrop = &self
+            .decrypt_text(eavesdropped_packet)
+            .expect("Can not fail, as we are decrypting value, that we had encrypted");
 
         // Do some formatting staff
         // Format and prettify Known CT and PT
