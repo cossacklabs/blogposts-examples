@@ -159,102 +159,7 @@ impl CBCGame {
             example_desc_start,
             example_desc_difference,
             ascii_art
-        ) = match iter {
-            0 => (
-                "Example with the same package being intercepted",
-                "As we can see all blocks are the same. That's why we can definitely tell, that \
-                message in the eavesdropped packet is the same as the leaked one!",
-                "
-
-      ▄████████    ▄████████   ▄▄▄▄███▄▄▄▄      ▄████████
-      ███    ███   ███    ███ ▄██▀▀▀███▀▀▀██▄   ███    ███
-      ███    █▀    ███    ███ ███   ███   ███   ███    █▀
-      ███          ███    ███ ███   ███   ███  ▄███▄▄▄
-    ▀███████████ ▀███████████ ███   ███   ███ ▀▀███▀▀▀
-             ███   ███    ███ ███   ███   ███   ███    █▄
-       ▄█    ███   ███    ███ ███   ███   ███   ███    ███
-     ▄████████▀    ███    █▀   ▀█   ███   █▀    ██████████
-                                                       "
-            ),
-            1 => (
-                "Example with package that has the different surname field being intercepted",
-                "Only the last block differs. We can assume that data in the last block has \
-                changed. Also keeping in mind, that the first block is the same, so structure \
-                of json can be the same. That's why we can guess that only surname has changed...",
-                "
-    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄▀▀▀▀▀▀▀▀▀█░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌        ▐░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄▄▄▄▄▄█░▌
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌▐░░░░░░░░░░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄▀▀▀▀▀▀▀▀▀█░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌        ▐░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄▄▄▄▄▄█░▌
-   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
-    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀"
-            ),
-            2 => (
-                "Example with package that has the different name field being intercepted",
-                "Block #2 differs. We can assume that data in that block has changed. Also keeping \
-                in mind, that the first block is the same, so structure of json can be the same. \
-                That's why we can guess that name has changed and maybe blocks after that...",
-                "
-    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄    ▄▄▄▄▄▄▄▄▄▄▄
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▐░░░░░░░░░░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄  ▀▀▀▀▀▀▀▀▀█░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌          ▐░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀           ▐░▌
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌   ▄▄▄▄▄▄▄▄▄█░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░░░░░░░░░░░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░█▀▀▀▀▀▀▀▀▀
-   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░█▄▄▄▄▄▄▄▄▄
-   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▐░░░░░░░░░░░▌
-    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀    ▀▀▀▀▀▀▀▀▀▀▀"
-            ),
-            3 => (
-                "Example with package that has the different name field being intercepted",
-                "Block #1 differs. We can assume that data in that block has changed. Also keeping \
-                in mind, that the first block is the same, so structure of json can be the same. \
-                That's why we can guess that usertype has changed and maybe blocks after that...",
-                "
-    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄     ▄▄▄▄
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▄█░░░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄▐░░▌▐░░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▀▀ ▐░░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀    ▐░░▌
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌     ▐░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄    ▐░░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌   ▐░░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄█░░█▄▄▄
-   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
-    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀"
-            ),
-            4 => (
-                "Example with package that has the different name field being intercepted",
-                "Block #0 differs. We can assume that data in that block has changed. We don't \
-                know whether if data changed in other blocks or not. But if first block differs - \
-                we can guess that data structure is different this time...",
-                "
-    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄     ▄▄▄▄▄▄▄▄▄
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌   ▐░░░░░░░░░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░█░█▀▀▀▀▀█░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░▌▐░▌    ▐░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░▌ ▐░▌   ▐░▌
-   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌  ▐░▌  ▐░▌  ▐░▌
-   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░▌   ▐░▌ ▐░▌
-   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░▌    ▐░▌▐░▌
-   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░█▄▄▄▄▄█░█░▌
-   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌   ▐░░░░░░░░░▌
-    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀     ▀▀▀▀▀▀▀▀▀"
-            ),
-            _ => (
-                "What are you doing here, step-bro??? UwU",
-                "Okay, here's some small secret crypto-tip for you: \
-                https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                ""
-            )
-        };
+        ) = CBCGame::get_desc_strings(iter);
 
         let mut blocks_status_utf8 = String::new();
         let mut blocks_status_hex = String::new();
@@ -341,6 +246,115 @@ impl CBCGame {
         println!("{formatted_decrypted_eavesdrop} \t- eavesdropped");
         println!("{formatted_known_pt} \t- leaked plaintext");
         println!("{blocks_status_utf8}");
+    }
+
+    fn get_desc_strings(iter: usize) -> (String, String, String) {
+        match iter {
+            0 => (
+                "Example with the same package being intercepted".to_string(),
+                "As we can see all blocks are the same. That's why we can definitely tell, that \
+                message in the eavesdropped packet is the same as the leaked one!".to_string(),
+                "
+
+      ▄████████    ▄████████   ▄▄▄▄███▄▄▄▄      ▄████████
+      ███    ███   ███    ███ ▄██▀▀▀███▀▀▀██▄   ███    ███
+      ███    █▀    ███    ███ ███   ███   ███   ███    █▀
+      ███          ███    ███ ███   ███   ███  ▄███▄▄▄
+    ▀███████████ ▀███████████ ███   ███   ███ ▀▀███▀▀▀
+             ███   ███    ███ ███   ███   ███   ███    █▄
+       ▄█    ███   ███    ███ ███   ███   ███   ███    ███
+     ▄████████▀    ███    █▀   ▀█   ███   █▀    ██████████
+                                                       ".to_string()
+            ),
+            1 => (
+                "Example with package that has the different surname field being intercepted"
+                    .to_string(),
+                "Only the last block differs. We can assume that data in the last block has \
+                changed. Also keeping in mind, that the first block is the same, so structure \
+                of json can be the same. That's why we can guess that only surname has changed..."
+                    .to_string(),
+                "
+    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄▀▀▀▀▀▀▀▀▀█░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌        ▐░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄▄▄▄▄▄█░▌
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌▐░░░░░░░░░░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄▀▀▀▀▀▀▀▀▀█░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌        ▐░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄▄▄▄▄▄█░▌
+   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
+    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀"
+                    .to_string()
+            ),
+            2 => (
+                "Example with package that has the different name field being intercepted"
+                    .to_string(),
+                "Block #2 differs. We can assume that data in that block has changed. Also keeping \
+                in mind, that the first block is the same, so structure of json can be the same. \
+                That's why we can guess that name has changed and maybe blocks after that..."
+                    .to_string(),
+                "
+    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄    ▄▄▄▄▄▄▄▄▄▄▄
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▐░░░░░░░░░░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄  ▀▀▀▀▀▀▀▀▀█░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌          ▐░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀           ▐░▌
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌   ▄▄▄▄▄▄▄▄▄█░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░░░░░░░░░░░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░█▀▀▀▀▀▀▀▀▀
+   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░█▄▄▄▄▄▄▄▄▄
+   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▐░░░░░░░░░░░▌
+    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀    ▀▀▀▀▀▀▀▀▀▀▀"
+                    .to_string()
+            ),
+            3 => (
+                "Example with package that has the different name field being intercepted"
+                    .to_string(),
+                "Block #1 differs. We can assume that data in that block has changed. Also keeping \
+                in mind, that the first block is the same, so structure of json can be the same. \
+                That's why we can guess that usertype has changed and maybe blocks after that..."
+                    .to_string(),
+                "
+    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄     ▄▄▄▄
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌  ▄█░░░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄▐░░▌▐░░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▀▀ ▐░░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀    ▐░░▌
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌     ▐░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄    ▐░░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌   ▐░░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀▄▄▄▄█░░█▄▄▄
+   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌▐░░░░░░░░░░░▌
+    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀"
+                    .to_string()
+            ),
+            4 => (
+                "Example with package that has the different name field being intercepted"
+                    .to_string(),
+                "Block #0 differs. We can assume that data in that block has changed. We don't \
+                know whether if data changed in other blocks or not. But if first block differs - \
+                we can guess that data structure is different this time...".to_string(),
+                "
+    ▄▄▄▄▄▄▄▄▄▄   ▄            ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄    ▄         ▄         ▄     ▄▄▄▄▄▄▄▄▄
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌   ▐░░░░░░░░░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌ ▐░▌       ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░█░█▀▀▀▀▀█░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░▌▐░▌    ▐░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░▌ ▐░▌   ▐░▌
+   ▐░░░░░░░░░░▌ ▐░▌          ▐░▌       ▐░▌▐░▌          ▐░░▌           ▐░▌       ▐░▌  ▐░▌  ▐░▌  ▐░▌
+   ▐░█▀▀▀▀▀▀▀█░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌░▌         ▄█░█▄▄▄▄▄▄▄█░█▄ ▐░▌   ▐░▌ ▐░▌
+   ▐░▌       ▐░▌▐░▌          ▐░▌       ▐░▌▐░▌          ▐░▌▐░▌       ▐░░░░░░░░░░░░░░░▌▐░▌    ▐░▌▐░▌
+   ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌ ▐░▌       ▀█░█▀▀▀▀▀▀▀█░█▀ ▐░█▄▄▄▄▄█░█░▌
+   ▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌  ▐░▌       ▐░▌       ▐░▌   ▐░░░░░░░░░▌
+    ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀    ▀         ▀         ▀     ▀▀▀▀▀▀▀▀▀"
+                    .to_string()
+            ),
+            _ => (
+                "What are you doing here, step-bro??? UwU".to_string(),
+                "Okay, here's some small secret crypto-tip for you:".to_string(),
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ".to_string()
+            )
+        }
     }
 
     // Formatting PT:
