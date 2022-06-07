@@ -155,19 +155,62 @@ impl CBCGame {
 
     fn example_eavesdropped_package(&self, iter: usize) {
         // Stored strings with description for every iteration.
-        let (
-            example_desc_start,
-            example_desc_difference,
-            ascii_art
-        ) = CBCGame::get_desc_strings(iter);
+        let (example_desc_start, example_desc_difference, ascii_art) =
+            CBCGame::get_desc_strings(iter);
 
+        // Let's take an example eavesdropped packet
+        // And decrypt it so we can assure, that our presumptions are correct
+        let eavesdropped_packet = &self.ciphertexts_vec[iter];
+        let decrypted_eavesdrop = &self.decrypt_text(eavesdropped_packet);
+
+        // Do some formatting staff
+        // Format and prettify Known CT and PT
+        // Also do the same procedures to an eavesdropped packets
+        let (formatted_blocks_pt, formatted_known_pt) =
+            CBCGame::format_blocks_utf8(&self.known_plaintext);
+        let (formatted_blocks_ct, formatted_known_ct) =
+            CBCGame::format_blocks_hex(&self.known_ciphertext);
+        let formatted_eavesdropped_ct = CBCGame::format_blocks_hex(eavesdropped_packet).1;
+        let formatted_decrypted_eavesdrop = CBCGame::format_blocks_utf8(decrypted_eavesdrop).1;
+        let (blocks_status_utf8, blocks_status_hex) = self.get_blocks_status(iter);
+
+        println!("{}", ascii_art.on_color(Color::Green));
+        println!("\n{example_desc_start}:");
+        println!("Leaked plaintext:");
+        println!("{formatted_blocks_pt}");
+        println!("{formatted_known_pt}");
+        println!("{}", " ".repeat(145).on_color(Color::Magenta));
+
+        println!("Let's compare known CT with the leaked one:");
+        println!("{formatted_blocks_ct}");
+        println!("{formatted_known_ct} - known CT");
+        println!("{formatted_eavesdropped_ct} - leaked CT");
+        println!("{blocks_status_hex}\n");
+
+        println!("{example_desc_difference}");
+        println!();
+        println!("✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨");
+        println!("{formatted_blocks_pt}");
+        println!("{formatted_decrypted_eavesdrop} \t- eavesdropped");
+        println!("{formatted_known_pt} \t- leaked plaintext");
+        println!("{blocks_status_utf8}");
+    }
+
+    // outputting beautified string, with painted blocks
+    // it shows on each step which block stays the same,
+    // which one is different, and which one in unknown state
+    // Example output on iter 2:
+    // |----- Same -----|----- Same -----|++++ Differs +++|✕✕✕✕ UnKnown ✕✕✕|
+    fn get_blocks_status(&self, iter: usize) -> (String, String) {
         let mut blocks_status_utf8 = String::new();
         let mut blocks_status_hex = String::new();
+
         let orange = TrueColor {
             r: 255,
             g: 140,
             b: 0,
         };
+
         write!(
             blocks_status_utf8,
             "{}{}{}{}",
@@ -210,42 +253,7 @@ impl CBCGame {
             })
         )
         .expect("Write to a string cannot fail");
-
-        // Let's take an example eavesdropped packet
-        // And decrypt it so we can assure, that our presumptions are correct
-        let eavesdropped_packet = &self.ciphertexts_vec[iter];
-        let decrypted_eavesdrop = &self.decrypt_text(eavesdropped_packet);
-
-        // Do some formatting staff
-        // Format and prettify Known CT and PT
-        // Also do the same procedures to an eavesdropped packets
-        let (formatted_blocks_pt, formatted_known_pt) =
-            CBCGame::format_blocks_utf8(&self.known_plaintext);
-        let (formatted_blocks_ct, formatted_known_ct) =
-            CBCGame::format_blocks_hex(&self.known_ciphertext);
-        let formatted_eavesdropped_ct = CBCGame::format_blocks_hex(eavesdropped_packet).1;
-        let formatted_decrypted_eavesdrop = CBCGame::format_blocks_utf8(decrypted_eavesdrop).1;
-
-        println!("{}", ascii_art.on_color(Color::Green));
-        println!("\n{example_desc_start}:");
-        println!("Leaked plaintext:");
-        println!("{formatted_blocks_pt}");
-        println!("{formatted_known_pt}");
-        println!("{}", " ".repeat(145).on_color(Color::Magenta));
-
-        println!("Let's compare known CT with the leaked one:");
-        println!("{formatted_blocks_ct}");
-        println!("{formatted_known_ct} - known CT");
-        println!("{formatted_eavesdropped_ct} - leaked CT");
-        println!("{blocks_status_hex}\n");
-
-        println!("{example_desc_difference}");
-        println!();
-        println!("✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨");
-        println!("{formatted_blocks_pt}");
-        println!("{formatted_decrypted_eavesdrop} \t- eavesdropped");
-        println!("{formatted_known_pt} \t- leaked plaintext");
-        println!("{blocks_status_utf8}");
+        (blocks_status_utf8, blocks_status_hex)
     }
 
     fn get_desc_strings(iter: usize) -> (String, String, String) {
