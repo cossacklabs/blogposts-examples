@@ -96,6 +96,11 @@ impl CBCGame {
                 _ => continue,
             }
         }
+        println!(
+            "\n{}",
+            "❱".repeat(40).color(Color::Black).on_color(Color::Yellow)
+        );
+        println!("The end of small interactive :D");
 
         Ok(())
     }
