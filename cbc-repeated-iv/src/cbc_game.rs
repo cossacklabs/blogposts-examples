@@ -31,9 +31,10 @@ impl Default for CBCGame {
 
 impl CBCGame {
     pub fn new() -> Self {
+        let mut rng = rand::thread_rng();
         Self {
-            key: [0; BLOCK_SIZE],
-            iv: [0; BLOCK_SIZE],
+            key: rng.gen(),
+            iv: rng.gen(),
 
             known_plaintext: br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "S"}"#
                 .to_vec(),
