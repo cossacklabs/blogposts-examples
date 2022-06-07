@@ -65,6 +65,7 @@ impl CBCGame {
 
     pub fn start(&mut self) -> anyhow::Result<()> {
         let mut iter = 0;
+        let mut line = String::new();
 
         println!("{}", self.cbc_same_iv_ascii_art.on_color(Color::Green));
 
@@ -75,16 +76,16 @@ impl CBCGame {
         self.print_known_texts();
 
         while iter < self.ciphertexts_vec.len() {
-            let mut line = String::new();
+            line.clear();
             println!(
                 "\n{}",
                 "❱".repeat(40).color(Color::Black).on_color(Color::Yellow)
             );
             println!("Input key (c(continue)/q(quit)):");
             std::io::stdin().read_line(&mut line)?;
+
             // remove new line char if present and leading and tracing spaces
-            line = line.trim().to_string();
-            match line.to_lowercase().as_str() {
+            match line.trim().to_lowercase().as_str() {
                 "q" | "quit" | "exit" => break,
                 "c" | "continue" => {
                     self.example_eavesdropped_package(iter);
