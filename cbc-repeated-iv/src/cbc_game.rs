@@ -174,26 +174,88 @@ impl CBCGame {
         let formatted_decrypted_eavesdrop = CBCGame::format_blocks_utf8(decrypted_eavesdrop).1;
         let (blocks_status_utf8, blocks_status_hex) = self.get_blocks_status(iter);
 
-        println!("{}", ascii_art.on_color(Color::Green));
-        println!("\n{example_desc_start}:");
-        println!("Leaked plaintext:");
-        println!("{formatted_blocks_pt}");
-        println!("{formatted_known_pt}");
-        println!("{}", " ".repeat(145).on_color(Color::Magenta));
+        // Let's create ascii tables for each step
+        let ascii_table_step0 = CBCGame::create_table(
+            &[
+                &"Given variables:".to_string(),
+                &format!(
+                    "{}  - known plaintext",
+                    String::from_utf8_lossy(&self.known_plaintext)
+                ),
+                &format!(
+                    "{}  - known ciphertext",
+                    hex::encode(&self.known_ciphertext)
+                ),
+                &format!(
+                    "{}  - eavesdropped ciphertext",
+                    hex::encode(eavesdropped_packet)
+                ),
+            ],
+            &[
+                16,
+                String::from_utf8_lossy(&self.known_plaintext).len() + 19,
+                hex::encode(&self.known_ciphertext).len() + 20,
+                hex::encode(eavesdropped_packet).len() + 27,
+            ],
+            3,
+        )
+        .expect("Ascii Table Creation Exception");
 
-        println!("Let's compare known CT with the leaked one:");
-        println!("{formatted_blocks_ct}");
-        println!("{formatted_known_ct} - known CT");
-        println!("{formatted_eavesdropped_ct} - leaked CT");
-        println!("{blocks_status_hex}\n");
+        let ascii_table_step1 = CBCGame::create_table(
+            &[
+                &"Let's compare known CT with the leaked one:".to_string(),
+                &formatted_blocks_ct,
+                &format!("{}  - known CT", formatted_known_ct),
+                &format!("{}  - leaked CT", formatted_eavesdropped_ct),
+                &blocks_status_hex,
+            ],
+            &[
+                43,
+                formatted_blocks_ct.len(),
+                formatted_blocks_ct.len() + 12,
+                formatted_blocks_ct.len() + 13,
+                formatted_blocks_ct.len(),
+            ],
+            3,
+        )
+        .expect("Ascii Table Creation Exception");
+
+        let ascii_table_step2 = CBCGame::create_table(
+            &[
+                &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
+                    .to_string(),
+                &formatted_blocks_pt,
+                &format!("{}  - eavesdropped PT", formatted_decrypted_eavesdrop),
+                &format!("{}  - leaked PT", formatted_known_pt),
+                &blocks_status_utf8,
+            ],
+            &[
+                69, // L0L
+                formatted_blocks_pt.len(),
+                formatted_blocks_pt.len() + 19,
+                formatted_blocks_pt.len() + 13,
+                formatted_blocks_pt.len(),
+            ],
+            3,
+        )
+        .expect("Ascii Table Creation Exception");
+
+        // Print formed output of current iteration
+        println!("{}", ascii_art.on_color(Color::Green));
+        println!("\n{}:", example_desc_start.bold());
+        println!();
+
+        println!("Step #0");
+        println!("{}", ascii_table_step0);
+        println!();
+
+        println!("Step #1");
+        println!("{}", ascii_table_step1);
+        println!();
 
         println!("{example_desc_difference}");
+        println!("{}", ascii_table_step2);
         println!();
-        println!("✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨");
-        println!("{formatted_blocks_pt}");
-        println!("{formatted_decrypted_eavesdrop} \t- eavesdropped");
-        println!("{formatted_known_pt} \t- leaked plaintext");
-        println!("{blocks_status_utf8}");
     }
 
     // outputting beautified string, with painted blocks
@@ -363,6 +425,40 @@ impl CBCGame {
                 "https://www.youtube.com/watch?v=dQw4w9WgXcQ".to_string()
             )
         }
+    }
+
+    // Creating beautified ascii table
+    // User must send strings (lines), length of each line and padding
+    // We need to send length of each line explicitly, because ColoredString adding extra characters
+    // That are hidden in standard console output
+    fn create_table(
+        strings_arr: &[&String],
+        strings_length: &[usize],
+        padding: usize,
+    ) -> anyhow::Result<String> {
+        let mut result_string = String::new();
+        let longest_string = strings_length
+            .iter()
+            .max()
+            .expect("Can not retrieve max value from strings_length array");
+        let size = longest_string + padding * 2;
+
+        writeln!(result_string, "╔{}╗", "═".repeat(size)).expect("");
+        writeln!(result_string, "║{}║", " ".repeat(size)).expect("");
+        for string_index in 0..strings_arr.len() {
+            writeln!(
+                result_string,
+                "║{}{}{}║",
+                " ".repeat(padding),
+                strings_arr[string_index],
+                " ".repeat(size - padding - strings_length[string_index])
+            )
+            .expect("");
+        }
+        writeln!(result_string, "║{}║", " ".repeat(size)).expect("");
+        write!(result_string, "╚{}╝", "═".repeat(size)).expect("");
+
+        Ok(result_string)
     }
 
     // Formatting PT:
