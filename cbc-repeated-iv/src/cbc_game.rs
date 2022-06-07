@@ -139,15 +139,15 @@ impl CBCGame {
         let (formatted_blocks_ct, formatted_known_ct) =
             CBCGame::format_blocks_hex(&self.known_ciphertext);
 
-        println!("Getting corresponding known CT to leaked PT:");
+        println!("Getting corresponding known CipherText to leaked PlainText:");
         println!("Here's leaked plaintext:");
         println!("{formatted_blocks_pt}");
         println!("{formatted_known_pt}\n");
-        println!("Here's corresponding CT to leaked PT:");
+        println!("Here's corresponding CipherText to leaked PlainText:");
         println!("{formatted_blocks_ct}");
         println!("{formatted_known_ct}\n\n");
 
-        println!("Let's wait and eavesdrop other CTs:");
+        println!("Let's wait and eavesdrop other CipherTexts:");
         for eavesdropped_ciphertext in &self.ciphertexts_vec {
             let formatted_ct = CBCGame::format_blocks_hex(eavesdropped_ciphertext).1;
             println!("{formatted_ct}");
@@ -182,15 +182,15 @@ impl CBCGame {
             &[
                 &"Given variables:".to_string(),
                 &format!(
-                    "{}  - known plaintext",
+                    "{}  - known PlainText",
                     String::from_utf8_lossy(&self.known_plaintext)
                 ),
                 &format!(
-                    "{}  - known ciphertext",
+                    "{}  - known CipherText",
                     hex::encode(&self.known_ciphertext)
                 ),
                 &format!(
-                    "{}  - eavesdropped ciphertext",
+                    "{}  - eavesdropped CipherText",
                     hex::encode(eavesdropped_packet)
                 ),
             ],
@@ -206,17 +206,17 @@ impl CBCGame {
 
         let ascii_table_step1 = CBCGame::create_table(
             &[
-                &"Let's compare known CT with the leaked one:".to_string(),
+                &"Let's compare known CipherText with the leaked one:".to_string(),
                 &formatted_blocks_ct,
-                &format!("{}  - known CT", formatted_known_ct),
-                &format!("{}  - leaked CT", formatted_eavesdropped_ct),
+                &format!("{}  - known CipherText", formatted_known_ct),
+                &format!("{}  - leaked CipherText", formatted_eavesdropped_ct),
                 &blocks_status_hex,
             ],
             &[
-                43,
+                51,
                 formatted_blocks_ct.len(),
-                formatted_blocks_ct.len() + 12,
-                formatted_blocks_ct.len() + 13,
+                formatted_blocks_ct.len() + 20,
+                formatted_blocks_ct.len() + 21,
                 formatted_blocks_ct.len(),
             ],
             3,
@@ -228,15 +228,18 @@ impl CBCGame {
                 &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
                     .to_string(),
                 &formatted_blocks_pt,
-                &format!("{}  - eavesdropped PT", formatted_decrypted_eavesdrop),
-                &format!("{}  - leaked PT", formatted_known_pt),
+                &format!(
+                    "{}  - eavesdropped PlainText",
+                    formatted_decrypted_eavesdrop
+                ),
+                &format!("{}  - leaked PlainText", formatted_known_pt),
                 &blocks_status_utf8,
             ],
             &[
                 69, // L0L
                 formatted_blocks_pt.len(),
-                formatted_blocks_pt.len() + 19,
-                formatted_blocks_pt.len() + 13,
+                formatted_blocks_pt.len() + 26,
+                formatted_blocks_pt.len() + 20,
                 formatted_blocks_pt.len(),
             ],
             3,
