@@ -215,7 +215,7 @@ impl CBCGame {
                 &"Let's compare known CipherText with the leaked one:".to_string(),
                 &formatted_blocks_ct,
                 &format!("{}  - known CipherText", formatted_known_ct),
-                &format!("{}  - leaked CipherText", formatted_eavesdropped_ct),
+                &format!("{}  - eavesdropped CipherText", formatted_eavesdropped_ct),
                 &blocks_status_hex
             )]],
             3,
@@ -229,11 +229,11 @@ impl CBCGame {
                 &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
                     .to_string(),
                 &formatted_blocks_pt,
+                &format!("{}  - known PlainText", formatted_known_pt),
                 &format!(
                     "{}  - eavesdropped PlainText",
                     formatted_decrypted_eavesdrop
                 ),
-                &format!("{}  - leaked PlainText", formatted_known_pt),
                 &blocks_status_utf8
             )]],
             3,
