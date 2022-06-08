@@ -12,3 +12,4 @@ cbc = { version = "0.1.2", features = ["alloc"] }
 colored = "2.0.0"
 rand = "0.8.5"
 hex = "0.4.3"
+prettytable-rs = "^0.8"

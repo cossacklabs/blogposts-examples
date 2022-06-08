@@ -4,6 +4,9 @@ use colored::Color::TrueColor;
 use colored::{Color, Colorize};
 use std::fmt::Write;
 
+use prettytable::format::{FormatBuilder, LinePosition, LineSeparator};
+use prettytable::{Cell, Row, Table};
+
 type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
 type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
@@ -184,8 +187,10 @@ impl CBCGame {
 
         // Let's create ascii tables for each step
         let ascii_table_step0 = CBCGame::create_table(
-            &[
-                &"Given variables:".to_string(),
+            "Step #0",
+            vec![vec![&format!(
+                "\n{}\n{}\n{}\n{}\n\n",
+                "Given variables:",
                 &format!(
                     "{}  - known PlainText",
                     String::from_utf8_lossy(&self.known_plaintext)
@@ -198,38 +203,29 @@ impl CBCGame {
                     "{}  - eavesdropped CipherText",
                     hex::encode(eavesdropped_packet)
                 ),
-            ],
-            &[
-                16,
-                String::from_utf8_lossy(&self.known_plaintext).len() + 19,
-                hex::encode(&self.known_ciphertext).len() + 20,
-                hex::encode(eavesdropped_packet).len() + 27,
-            ],
+            )]],
             3,
         )
         .expect("Ascii Table Creation Exception");
 
         let ascii_table_step1 = CBCGame::create_table(
-            &[
+            "Step 1:",
+            vec![vec![&format!(
+                "\n{}\n{}\n{}\n{}\n{}\n\n",
                 &"Let's compare known CipherText with the leaked one:".to_string(),
                 &formatted_blocks_ct,
                 &format!("{}  - known CipherText", formatted_known_ct),
                 &format!("{}  - leaked CipherText", formatted_eavesdropped_ct),
-                &blocks_status_hex,
-            ],
-            &[
-                51,
-                formatted_blocks_ct.len(),
-                formatted_blocks_ct.len() + 20,
-                formatted_blocks_ct.len() + 21,
-                formatted_blocks_ct.len(),
-            ],
+                &blocks_status_hex
+            )]],
             3,
         )
         .expect("Ascii Table Creation Exception");
 
         let ascii_table_step2 = CBCGame::create_table(
-            &[
+            "",
+            vec![vec![&format!(
+                "\n{}\n{}\n{}\n{}\n{}\n\n",
                 &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
                     .to_string(),
                 &formatted_blocks_pt,
@@ -238,15 +234,8 @@ impl CBCGame {
                     formatted_decrypted_eavesdrop
                 ),
                 &format!("{}  - leaked PlainText", formatted_known_pt),
-                &blocks_status_utf8,
-            ],
-            &[
-                69, // L0L
-                formatted_blocks_pt.len(),
-                formatted_blocks_pt.len() + 26,
-                formatted_blocks_pt.len() + 20,
-                formatted_blocks_pt.len(),
-            ],
+                &blocks_status_utf8
+            )]],
             3,
         )
         .expect("Ascii Table Creation Exception");
@@ -256,11 +245,9 @@ impl CBCGame {
         println!("\n{}:", example_desc_start.bold());
         println!();
 
-        println!("Step #0");
         println!("{}", ascii_table_step0);
         println!();
 
-        println!("Step #1");
         println!("{}", ascii_table_step1);
         println!();
 
@@ -440,36 +427,97 @@ impl CBCGame {
 
     // Creating beautified ascii table
     // User must send strings (lines), length of each line and padding
-    // We need to send length of each line explicitly, because ColoredString adding extra characters
-    // That are hidden in standard console output
+    // We need to use old (3 years ago last commit) crate, because new one
+    // Can't handle Colorized strings properly
     fn create_table(
-        strings_arr: &[&String],
-        strings_length: &[usize],
+        title: &str,
+        data: Vec<Vec<&String>>,
         padding: usize,
     ) -> anyhow::Result<String> {
-        let mut result_string = String::new();
-        let longest_string = strings_length
-            .iter()
-            .max()
-            .expect("Can not retrieve max value from strings_length array");
-        let size = longest_string + padding * 2;
-
-        writeln!(result_string, "╔{}╗", "═".repeat(size)).expect("");
-        writeln!(result_string, "║{}║", " ".repeat(size)).expect("");
-        for string_index in 0..strings_arr.len() {
-            writeln!(
-                result_string,
-                "║{}{}{}║",
-                " ".repeat(padding),
-                strings_arr[string_index],
-                " ".repeat(size - padding - strings_length[string_index])
+        // At first let's create and build custom styles for title and main table
+        let main_table_format = FormatBuilder::new()
+            .column_separator('║')
+            .borders('║')
+            .separators(&[LinePosition::Top], LineSeparator::new('═', '╦', '╔', '╗'))
+            .separators(
+                &[LinePosition::Intern],
+                LineSeparator::new('═', '╬', '╠', '╣'),
             )
-            .expect("");
-        }
-        writeln!(result_string, "║{}║", " ".repeat(size)).expect("");
-        write!(result_string, "╚{}╝", "═".repeat(size)).expect("");
+            .separators(
+                &[LinePosition::Bottom],
+                LineSeparator::new('═', '╩', '╚', '╝'),
+            )
+            .padding(padding, padding)
+            .build();
 
-        Ok(result_string)
+        let title_table_format = FormatBuilder::new()
+            .column_separator('║')
+            .borders('║')
+            .separators(&[LinePosition::Top], LineSeparator::new('═', '╦', '╔', '╗'))
+            .separators(
+                &[LinePosition::Intern],
+                LineSeparator::new('═', '╬', '╠', '╣'),
+            )
+            .padding(padding, padding)
+            .build();
+
+        // Then let's create title table
+        let mut title_table = Table::new();
+        title_table.set_format(title_table_format);
+        // And set it with content
+        title_table.add_row(Row::new(vec![Cell::new(title)]));
+
+        // Creating main table
+        let mut main_table = Table::new();
+        main_table.set_format(main_table_format);
+
+        // Filling data into main table
+        for row in data {
+            // Fill row with cells
+            let mut cells_vector = vec![];
+
+            for cell in row {
+                cells_vector.push(Cell::new(cell.as_str()));
+            }
+
+            // Create new row and add it into main table
+            main_table.add_row(Row::new(cells_vector));
+        }
+        // Get main table as string variable
+        let mut main_table_str = main_table.to_string();
+        // And remove 'new line char' at the end of the string
+        main_table_str.pop();
+
+        // If there is no title => return only main table
+        if title.is_empty() {
+            Ok(main_table_str)
+        }
+        // Otherwise we need to pair them
+        else {
+            // Replace first char of the main table with '╠' char
+            main_table_str.replace_range(
+                main_table_str
+                    .char_indices()
+                    .next()
+                    .map(|(pos, ch)| (pos..pos + ch.len_utf8()))
+                    .unwrap(),
+                "╠",
+            );
+
+            // Replace one of top characters with '╩'
+            // So we can smoothly pair title and main table
+            let end_of_title_table = (title_table.to_string().find('\n').expect("")) / 3;
+            main_table_str.replace_range(
+                main_table_str
+                    .char_indices()
+                    .nth(end_of_title_table - 1)
+                    .map(|(pos, ch)| (pos..pos + ch.len_utf8()))
+                    .unwrap(),
+                "╩",
+            );
+
+            Ok(format!("{title_table}{main_table_str}"))
+        }
     }
 
     // Formatting PT:
