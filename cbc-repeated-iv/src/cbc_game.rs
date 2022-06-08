@@ -93,7 +93,7 @@ impl CBCGame {
             match line.trim().to_lowercase().as_str() {
                 "q" | "quit" | "exit" => break,
                 "c" | "continue" => {
-                    self.example_eavesdropped_package(iter);
+                    self.example_eavesdropped_package(iter)?;
                     iter += 1;
                 }
                 _ => continue,
@@ -162,7 +162,7 @@ impl CBCGame {
         }
     }
 
-    fn example_eavesdropped_package(&self, iter: usize) {
+    fn example_eavesdropped_package(&self, iter: usize) -> anyhow::Result<()> {
         // Stored strings with description for every iteration.
         let (example_desc_start, example_desc_difference, ascii_art) =
             CBCGame::get_desc_strings(iter);
@@ -205,8 +205,7 @@ impl CBCGame {
                 ),
             )]],
             3,
-        )
-        .expect("Ascii Table Creation Exception");
+        )?;
 
         let ascii_table_step1 = CBCGame::create_table(
             "Step 1:",
@@ -219,8 +218,7 @@ impl CBCGame {
                 &blocks_status_hex
             )]],
             3,
-        )
-        .expect("Ascii Table Creation Exception");
+        )?;
 
         let ascii_table_step2 = CBCGame::create_table(
             "",
@@ -237,8 +235,7 @@ impl CBCGame {
                 &blocks_status_utf8
             )]],
             3,
-        )
-        .expect("Ascii Table Creation Exception");
+        )?;
 
         // Print formed output of current iteration
         println!("{}", ascii_art.on_color(Color::Green));
@@ -254,6 +251,8 @@ impl CBCGame {
         println!("{example_desc_difference}");
         println!("{}", ascii_table_step2);
         println!();
+
+        Ok(())
     }
 
     // outputting beautified string, with painted blocks
@@ -500,7 +499,7 @@ impl CBCGame {
                     .char_indices()
                     .next()
                     .map(|(pos, ch)| (pos..pos + ch.len_utf8()))
-                    .unwrap(),
+                    .expect("Any table should have at least 4 chars + new line character"),
                 "╠",
             );
 
@@ -512,7 +511,7 @@ impl CBCGame {
                     .char_indices()
                     .nth(end_of_title_table - 1)
                     .map(|(pos, ch)| (pos..pos + ch.len_utf8()))
-                    .unwrap(),
+                    .expect("Any table should have at least one new line character"),
                 "╩",
             );
 
