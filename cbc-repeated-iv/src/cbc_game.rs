@@ -211,11 +211,11 @@ impl CBCGame {
             "Step 1:",
             &[vec![&format!(
                 "\n{}\n{}\n{}\n{}\n{}\n\n",
-                &"Let's compare known CipherText with the leaked one:".to_string(),
-                &formatted_blocks_ct,
+                "Let's compare known CipherText with the leaked one:",
+                formatted_blocks_ct,
                 &format!("{}  - known CipherText", formatted_known_ct),
                 &format!("{}  - eavesdropped CipherText", formatted_eavesdropped_ct),
-                &blocks_status_hex
+                blocks_status_hex
             )]],
             3,
         )?;
@@ -224,15 +224,14 @@ impl CBCGame {
             "",
             &[vec![&format!(
                 "\n{}\n{}\n{}\n{}\n{}\n\n",
-                &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
-                    .to_string(),
-                &formatted_blocks_pt,
+                "| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |",
+                formatted_blocks_pt,
                 &format!("{}  - known PlainText", formatted_known_pt),
                 &format!(
                     "{}  - eavesdropped PlainText",
                     formatted_decrypted_eavesdrop
                 ),
-                &blocks_status_utf8
+                blocks_status_utf8
             )]],
             3,
         )?;
