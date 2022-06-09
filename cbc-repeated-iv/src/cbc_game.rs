@@ -188,7 +188,7 @@ impl CBCGame {
         // Let's create ascii tables for each step
         let ascii_table_step0 = CBCGame::create_table(
             "Step #0",
-            vec![vec![&format!(
+            &[vec![&format!(
                 "\n{}\n{}\n{}\n{}\n\n",
                 "Given variables:",
                 &format!(
@@ -209,7 +209,7 @@ impl CBCGame {
 
         let ascii_table_step1 = CBCGame::create_table(
             "Step 1:",
-            vec![vec![&format!(
+            &[vec![&format!(
                 "\n{}\n{}\n{}\n{}\n{}\n\n",
                 &"Let's compare known CipherText with the leaked one:".to_string(),
                 &formatted_blocks_ct,
@@ -222,7 +222,7 @@ impl CBCGame {
 
         let ascii_table_step2 = CBCGame::create_table(
             "",
-            vec![vec![&format!(
+            &[vec![&format!(
                 "\n{}\n{}\n{}\n{}\n{}\n\n",
                 &"| ✨✨ Let's bring some magic and decrypt eavesdropped packet: ✨✨ |"
                     .to_string(),
@@ -428,11 +428,7 @@ impl CBCGame {
     // User must send strings (lines), length of each line and padding
     // We need to use old (3 years ago last commit) crate, because new one
     // Can't handle Colorized strings properly
-    fn create_table(
-        title: &str,
-        data: Vec<Vec<&String>>,
-        padding: usize,
-    ) -> anyhow::Result<String> {
+    fn create_table(title: &str, data: &[Vec<&str>], padding: usize) -> anyhow::Result<String> {
         // At first let's create and build custom styles for title and main table
         let main_table_format = FormatBuilder::new()
             .column_separator('║')
@@ -476,7 +472,7 @@ impl CBCGame {
             let mut cells_vector = vec![];
 
             for cell in row {
-                cells_vector.push(Cell::new(cell.as_str()));
+                cells_vector.push(Cell::new(cell));
             }
 
             // Create new row and add it into main table
