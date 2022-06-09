@@ -76,8 +76,6 @@ impl CBCGame {
 
         self.reinitialize_enc_dec();
 
-        self.encrypt_all_texts();
-
         self.print_known_texts();
 
         while iter < self.ciphertexts_vec.len() {
@@ -112,6 +110,8 @@ impl CBCGame {
         let mut rng = rand::thread_rng();
         self.key = rng.gen();
         self.iv = rng.gen();
+
+        self.encrypt_all_texts();
     }
 
     fn encrypt_all_texts(&mut self) {
