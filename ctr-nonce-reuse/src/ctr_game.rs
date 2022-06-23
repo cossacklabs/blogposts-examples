@@ -125,13 +125,9 @@ impl CtrGame {
         result
     }
 
-    /*
-    Dead Code
-    But we can leave it to show how CTR mode is decrypting
-    fn decrypt_bytes(&self, ciphertext_vec: &[u8]) -> Vec<u8> {
+    pub fn decrypt_bytes(&self, ciphertext_vec: &[u8]) -> Vec<u8> {
         self.encrypt_bytes(ciphertext_vec)
     }
-    */
 
     pub fn byte_to_hex(data: &[u8]) -> String {
         hex::encode(data)

@@ -5,7 +5,7 @@ use iced::{
 
 use iced_aw::{TabLabel, Tabs};
 
-mod ctr_game;
+pub mod ctr_game;
 
 mod ctr_game_tab;
 use ctr_game_tab::{CTRGameMessage, CTRGameTab};
@@ -92,9 +92,7 @@ trait Tab {
     fn tab_label(&self) -> TabLabel;
 
     fn view(&mut self) -> Element<'_, Self::Message> {
-        let column = Column::new()
-            .spacing(20)
-            .push(self.content());
+        let column = Column::new().spacing(20).push(self.content());
 
         Container::new(column)
             .width(Length::Fill)
