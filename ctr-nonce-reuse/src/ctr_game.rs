@@ -139,17 +139,10 @@ impl CtrGame {
     }
 
     pub fn hex_to_text(data: String) -> String {
-        let decoded = hex::decode(data);
-        if decoded.is_err() {
-            return String::from("[unprintable]");
-        }
-        let decoded = decoded.expect("We have already handled the error");
-
-        let decoded = String::from_utf8(decoded);
-        if decoded.is_err() {
-            return String::from("[unprintable]");
-        }
-        decoded.expect("We have already handled the error")
+        hex::decode(data)
+            .ok()
+            .and_then(|data| String::from_utf8(data).ok())
+            .unwrap_or_else(|| String::from("[unprintable]"))
     }
 
     pub fn text_to_hex(data: String) -> String {
@@ -159,11 +152,13 @@ impl CtrGame {
     pub fn xor_hex(data: Vec<&String>) -> String {
         let mut data_vec = Vec::new();
         for elem in data {
-            let decoded = hex::decode(elem);
-            if decoded.is_err() {
-                return String::from("[unprintable]");
-            }
-            data_vec.push(decoded.expect("We have already handled the error"));
+            let decoded = match hex::decode(elem) {
+                Ok(decoded) => decoded,
+                Err(_) => {
+                    return String::from("[unprintable]");
+                }
+            };
+            data_vec.push(decoded);
         }
         let vec_result = Self::xor_vec(data_vec);
 
