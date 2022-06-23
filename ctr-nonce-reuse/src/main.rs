@@ -94,7 +94,6 @@ trait Tab {
     fn view(&mut self) -> Element<'_, Self::Message> {
         let column = Column::new()
             .spacing(20)
-            //.push(Text::new(self.title()).size(HEADER_SIZE))
             .push(self.content());
 
         Container::new(column)
