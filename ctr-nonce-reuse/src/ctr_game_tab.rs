@@ -208,7 +208,7 @@ impl Tab for CTRGameTab {
                 Card::new(
                     Text::new("YOU WON"),
                     Text::new(
-                        "Congratulations, You've won!\nAnd rememner, never roll your own crypto!",
+                        "Congratulations, You've won!\nAnd remember: never roll your own crypto!",
                     ),
                 )
                 .foot(
