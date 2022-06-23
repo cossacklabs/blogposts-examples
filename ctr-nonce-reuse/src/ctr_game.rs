@@ -87,7 +87,10 @@ impl CtrGame {
             .plaintexts_vec
             .choose_multiple(&mut rng, count)
             .collect();
-        self.known_plaintext = chosen_plaintext.choose(&mut rng).expect("non-empty").to_vec();
+        self.known_plaintext = chosen_plaintext
+            .choose(&mut rng)
+            .expect("non-empty")
+            .to_vec();
         chosen_plaintext.push(&self.flag_plaintext);
         chosen_plaintext.shuffle(&mut rng);
         for plaintext in chosen_plaintext {
@@ -111,7 +114,7 @@ impl CtrGame {
     }
 
     pub fn submit_flag(&self, flag_request: String) -> bool {
-        flag_request.into_bytes().eq(&self.flag_plaintext)
+        flag_request.as_bytes() == self.flag_plaintext
     }
 
     fn encrypt_bytes(&self, plaintext_vec: &[u8]) -> Vec<u8> {
