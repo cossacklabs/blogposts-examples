@@ -3,7 +3,7 @@
 This demo is a little game that utilises technical issues of reusing the nonce in CTR mode,
 just hit:
 ```bash
-$ cargo run
+$ cargo run --release
 ```
 You will see a window with 3 tabs:
 - main tab with game. It has 4 eavesdropped packets. Those are ciphertexts. One of them is the ciphertext of the FLAG value. Also, there is a hint with the plaintext of one of 3 eavesdropped packets.
