@@ -87,7 +87,7 @@ impl CtrGame {
             .plaintexts_vec
             .choose_multiple(&mut rng, count)
             .collect();
-        self.known_plaintext = (*chosen_plaintext.choose(&mut rng).expect("a")).clone();
+        self.known_plaintext = chosen_plaintext.choose(&mut rng).expect("non-empty").to_vec();
         chosen_plaintext.push(&self.flag_plaintext);
         chosen_plaintext.shuffle(&mut rng);
         for plaintext in chosen_plaintext {
