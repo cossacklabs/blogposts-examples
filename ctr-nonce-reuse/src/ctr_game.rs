@@ -1,7 +1,6 @@
 use std::cmp::min;
 use std::ops::BitXorAssign;
 
-use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
 use rand::Rng;
 use std::fmt::Write;
@@ -14,8 +13,6 @@ const BLOCK_SIZE: usize = 16;
 const EAVESDROPPED_MSG_COUNT: usize = 3;
 
 pub struct CtrGame {
-    rng: ThreadRng,
-
     //aes_ctr: Aes128Ctr64LE,
     key: [u8; BLOCK_SIZE],
     nonce: [u8; BLOCK_SIZE],
@@ -35,17 +32,14 @@ impl Default for CtrGame {
 
 impl CtrGame {
     pub fn new() -> Self {
-        let rng = rand::thread_rng();
-        let mut init_rng = rng.clone();
+        let mut rng = rand::thread_rng();
         //let key:[u8; BLOCK_SIZE] = rng.gen();
         //let nonce:[u8; BLOCK_SIZE] = rng.gen();
 
         Self {
-            rng,
-
             //aes_ctr: Aes128Ctr64LE::new(&key.into(), &nonce.into()),
-            key: init_rng.gen(),
-            nonce: init_rng.gen(),
+            key: rng.gen(),
+            nonce: rng.gen(),
 
             known_plaintext: vec![],
             flag_plaintext: vec![],
@@ -66,10 +60,10 @@ impl CtrGame {
     }
 
     pub fn restart(&mut self) {
-        self.rng = rand::thread_rng();
+        let mut rng = rand::thread_rng();
 
-        self.key = self.rng.gen();
-        self.nonce = self.rng.gen();
+        self.key = rng.gen();
+        self.nonce = rng.gen();
         //self.aes_ctr = Aes128Ctr64LE::new(&key.into(), &nonce.into());
 
         let flag_str = self.create_random_flag();
@@ -78,9 +72,11 @@ impl CtrGame {
         self.create_ciphertexts(EAVESDROPPED_MSG_COUNT);
     }
 
-    fn create_random_flag(&mut self) -> String {
-        let left_random_bytes: [u8; 4] = self.rng.gen();
-        let right_random_bytes: [u8; 4] = self.rng.gen();
+    fn create_random_flag(&self) -> String {
+        let mut rng = rand::thread_rng();
+
+        let left_random_bytes: [u8; 4] = rng.gen();
+        let right_random_bytes: [u8; 4] = rng.gen();
         let mut flag_str = String::new();
 
         write!(
@@ -95,14 +91,15 @@ impl CtrGame {
     }
 
     fn create_ciphertexts(&mut self, count: usize) {
+        let mut rng = rand::thread_rng();
         self.ciphertexts_vec.clear();
         let mut chosen_plaintext: Vec<_> = self
             .plaintexts_vec
-            .choose_multiple(&mut self.rng, count)
+            .choose_multiple(&mut rng, count)
             .collect();
-        self.known_plaintext = (*chosen_plaintext.choose(&mut self.rng).expect("a")).clone();
+        self.known_plaintext = (*chosen_plaintext.choose(&mut rng).expect("a")).clone();
         chosen_plaintext.push(&self.flag_plaintext);
-        chosen_plaintext.shuffle(&mut self.rng);
+        chosen_plaintext.shuffle(&mut rng);
         for plaintext in chosen_plaintext {
             let ciphertext = self.encrypt_bytes(plaintext);
             self.ciphertexts_vec.push(ciphertext);
