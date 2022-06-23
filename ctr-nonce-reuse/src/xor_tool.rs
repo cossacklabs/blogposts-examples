@@ -57,7 +57,6 @@ impl Tab for XorToolTab {
 
     fn tab_label(&self) -> TabLabel {
         TabLabel::Text(self.title())
-        //TabLabel::IconText(Icon::User.into(), self.title())
     }
 
     fn content(&mut self) -> Element<'_, Self::Message> {
@@ -72,7 +71,6 @@ impl Tab for XorToolTab {
             &self.data_hex_1,
             XorToolMessage::Hex1DataChanged,
         )
-        //.size()
         .width(Length::Fill)
         .padding(15);
 
@@ -83,7 +81,6 @@ impl Tab for XorToolTab {
             &self.data_hex_2,
             XorToolMessage::Hex2DataChanged,
         )
-        //.size(30)
         .width(Length::Fill)
         .padding(15);
 

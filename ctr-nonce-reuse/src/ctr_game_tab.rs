@@ -234,7 +234,6 @@ impl Tab for CTRGameTab {
                         ),
                 )
                 .max_width(300)
-                //.width(Length::Shrink)
                 .on_close(CTRGameMessage::CloseModal)
                 .into()
             })

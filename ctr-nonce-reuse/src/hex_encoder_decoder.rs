@@ -54,7 +54,6 @@ impl Tab for HexEncDecTab {
 
     fn tab_label(&self) -> TabLabel {
         TabLabel::Text(String::from("HEX ENC/DEX"))
-        //TabLabel::IconText(Icon::User.into(), self.title())
     }
 
     fn content(&mut self) -> Element<'_, Self::Message> {
@@ -69,7 +68,6 @@ impl Tab for HexEncDecTab {
             &self.data_hex,
             HexEncDecMessage::HexDataChanged,
         )
-        //.size()
         .width(Length::Fill)
         .padding(15);
 
@@ -80,7 +78,6 @@ impl Tab for HexEncDecTab {
             &self.data_ascii,
             HexEncDecMessage::AsciiDataChanged,
         )
-        //.size(30)
         .width(Length::Fill)
         .padding(15);
 

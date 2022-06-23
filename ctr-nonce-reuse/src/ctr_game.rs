@@ -44,7 +44,6 @@ impl CtrGame {
                 br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "M"}"#.to_vec(),
                 br#"{  "UserType": "UsualUser",     "Name": "Tom",  "Surname": "S"}"#.to_vec(),
                 br#"{  "UserType": "Administrator", "Name": "Alex", "Surname": "S"}"#.to_vec(),
-                //br#"{ "Heartbeat": "Alive",         "Since": "1653924358" }"#.to_vec(),
                 br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "S"}"#.to_vec(),
                 br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "M"}"#.to_vec(),
                 br#"{  "UserType": "UsualUser",     "Name": "Tom",  "Surname": "S"}"#.to_vec(),
