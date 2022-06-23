@@ -165,13 +165,13 @@ impl CtrGame {
         hex::encode(vec_result)
     }
 
-    pub fn xor_vec(data: Vec<Vec<u8>>) -> Vec<u8> {
+    pub fn xor_vec(mut data: Vec<Vec<u8>>) -> Vec<u8> {
         let xor_result = Vec::new();
         if data.len() < 2 {
             return xor_result;
         }
-        let mut xor_result = data[0].clone();
-        for elem in data.iter().skip(1) {
+        let mut xor_result = data.pop().expect("length is checked");
+        for elem in data.iter() {
             let xor_result_len = min(xor_result.len(), elem.len());
             for i in 0..xor_result_len {
                 xor_result[i].bitxor_assign(elem[i])
