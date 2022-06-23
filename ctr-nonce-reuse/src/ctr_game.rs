@@ -3,7 +3,6 @@ use std::ops::BitXorAssign;
 
 use rand::seq::SliceRandom;
 use rand::Rng;
-use std::fmt::Write;
 
 use aes::cipher::{KeyIvInit, StreamCipher};
 
@@ -72,15 +71,11 @@ impl CtrGame {
 
         let left_random_bytes: [u8; 4] = rng.gen();
         let right_random_bytes: [u8; 4] = rng.gen();
-        let mut flag_str = String::new();
-
-        write!(
-            flag_str,
+        let flag_str = format!(
             "FLAG{{{}_CtR_1sNT_SeCC_{}}}",
             Self::byte_to_hex(&left_random_bytes),
             Self::byte_to_hex(&right_random_bytes)
-        )
-        .expect("String formatting can not fail");
+        );
 
         flag_str
     }
