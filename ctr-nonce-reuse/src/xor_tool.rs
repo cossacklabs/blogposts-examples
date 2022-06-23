@@ -1,6 +1,6 @@
 use crate::{Message, Tab};
 use iced::text_input::{self, TextInput};
-use iced::{Alignment, Column, Container, Element, Length, Row, Text};
+use iced::{scrollable, Alignment, Column, Container, Element, Length, Row, Scrollable, Text};
 use iced_aw::TabLabel;
 
 use crate::ctr_game::CtrGame;
@@ -15,6 +15,8 @@ pub struct XorToolTab {
 
     input_output: text_input::State,
     data_output: String,
+
+    scrollable_state: scrollable::State,
 }
 
 #[derive(Debug, Clone)]
@@ -109,7 +111,7 @@ impl Tab for XorToolTab {
             .push(input_hex)
             .push(input_ascii);
 
-        let content = Column::new()
+        let main_column = Column::new()
             .width(Length::Shrink)
             .spacing(20)
             .align_items(Alignment::Fill)
@@ -121,7 +123,15 @@ impl Tab for XorToolTab {
             .push(output_title)
             .push(input_output);
 
-        let container: Element<'_, XorToolMessage> = Container::new(content)
+        let scrollable_content = Scrollable::new(&mut self.scrollable_state)
+            .width(Length::Fill)
+            .align_items(Alignment::Center)
+            .scrollbar_width(4)
+            .scroller_width(4)
+            .scrollbar_margin(5)
+            .push(main_column);
+
+        let container: Element<'_, XorToolMessage> = Container::new(scrollable_content)
             .width(Length::Fill)
             .height(Length::Fill)
             .center_x()

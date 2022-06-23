@@ -189,7 +189,7 @@ impl Tab for CTRGameTab {
             .push(title)
             .push(content_row);
 
-        let content = Scrollable::new(&mut self.scrollable_state)
+        let scrollable_content = Scrollable::new(&mut self.scrollable_state)
             .width(Length::Fill)
             .align_items(Alignment::Center)
             .scrollbar_width(4)
@@ -197,7 +197,7 @@ impl Tab for CTRGameTab {
             .scrollbar_margin(5)
             .push(main_column);
 
-        let content = Container::new(content)
+        let content = Container::new(scrollable_content)
             .width(Length::Fill)
             .height(Length::Fill)
             .center_x()
