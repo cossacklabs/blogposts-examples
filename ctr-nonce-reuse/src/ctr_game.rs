@@ -13,7 +13,6 @@ const BLOCK_SIZE: usize = 16;
 const EAVESDROPPED_MSG_COUNT: usize = 3;
 
 pub struct CtrGame {
-    //aes_ctr: Aes128Ctr64LE,
     key: [u8; BLOCK_SIZE],
     nonce: [u8; BLOCK_SIZE],
 
@@ -33,11 +32,8 @@ impl Default for CtrGame {
 impl CtrGame {
     pub fn new() -> Self {
         let mut rng = rand::thread_rng();
-        //let key:[u8; BLOCK_SIZE] = rng.gen();
-        //let nonce:[u8; BLOCK_SIZE] = rng.gen();
 
         Self {
-            //aes_ctr: Aes128Ctr64LE::new(&key.into(), &nonce.into()),
             key: rng.gen(),
             nonce: rng.gen(),
 
@@ -64,7 +60,6 @@ impl CtrGame {
 
         self.key = rng.gen();
         self.nonce = rng.gen();
-        //self.aes_ctr = Aes128Ctr64LE::new(&key.into(), &nonce.into());
 
         let flag_str = self.create_random_flag();
         self.flag_plaintext = flag_str.into();
@@ -134,6 +129,8 @@ impl CtrGame {
     }
 
     /*
+    Dead Code
+    But we can leave it to show how CTR mode is decrypting
     fn decrypt_bytes(&self, ciphertext_vec: &[u8]) -> Vec<u8> {
         self.encrypt_bytes(ciphertext_vec)
     }
