@@ -100,6 +100,7 @@ impl Tab for HexEncDecTab {
             .width(Length::Shrink)
             .spacing(20)
             .align_items(Alignment::Fill)
+            .padding(15)
             .push(title)
             .push(desc)
             .push(input_title_row)
@@ -108,7 +109,6 @@ impl Tab for HexEncDecTab {
         let container: Element<'_, HexEncDecMessage> = Container::new(content)
             .width(Length::Fill)
             .height(Length::Fill)
-            .padding(20)
             .center_x()
             .center_y()
             .into();

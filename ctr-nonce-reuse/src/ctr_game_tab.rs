@@ -185,6 +185,7 @@ impl Tab for CTRGameTab {
             .width(Length::Fill)
             .spacing(20)
             .align_items(Alignment::Center)
+            .padding(15)
             .push(title)
             .push(content_row);
 
@@ -193,7 +194,6 @@ impl Tab for CTRGameTab {
             .align_items(Alignment::Center)
             .scrollbar_width(4)
             .scroller_width(4)
-            .padding(15)
             .scrollbar_margin(5)
             .push(main_column);
 

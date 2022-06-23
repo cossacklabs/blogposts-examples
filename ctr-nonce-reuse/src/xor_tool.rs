@@ -113,6 +113,7 @@ impl Tab for XorToolTab {
             .width(Length::Shrink)
             .spacing(20)
             .align_items(Alignment::Fill)
+            .padding(15)
             .push(title)
             .push(desc)
             .push(input_title_row)
@@ -123,7 +124,6 @@ impl Tab for XorToolTab {
         let container: Element<'_, XorToolMessage> = Container::new(content)
             .width(Length::Fill)
             .height(Length::Fill)
-            .padding(20)
             .center_x()
             .center_y()
             .into();
