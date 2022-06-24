@@ -68,8 +68,8 @@ impl CtrGame {
     fn create_random_flag(&self) -> String {
         let mut rng = rand::thread_rng();
 
-        let left_random_bytes: [u8; 4] = rng.gen();
-        let right_random_bytes: [u8; 4] = rng.gen();
+        let left_random_bytes: [u8; 2] = rng.gen();
+        let right_random_bytes: [u8; 2] = rng.gen();
         let flag_str = format!(
             "FLAG{{{}_CtR_1sNT_SeCC_{}}}",
             Self::byte_to_hex(&left_random_bytes),
