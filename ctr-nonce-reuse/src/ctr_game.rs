@@ -44,10 +44,10 @@ impl CtrGame {
                 br#"Free Ukraine, Donate on u24.gov.ua !"#.to_vec(),
                 br#"Russian Warship - Go F Yourself"#.to_vec(),
                 // https://youtu.be/2Cv6nFwDGvA?t=12
-                br#"Guys, don't take up a defensive position... (UAF to Nazis)"#.to_vec(),
-                br#"Better just to surrender now... (UAF to Nazis)"#.to_vec(),
-                br#"You are all F'ed... (UAF to Nazis)"#.to_vec(),
-                br#"You're on my land, and there you'll feed worms (UAF to Nazis)"#.to_vec(),
+                br#"Guys, don't take up a defensive position... (UAF to RUS)"#.to_vec(),
+                br#"Better just to surrender now... (UAF to RUS)"#.to_vec(),
+                br#"You are all F'ed... (UAF to RUS)"#.to_vec(),
+                br#"You're on my land, and there you'll feed worms (UAF to RUS)"#.to_vec(),
                 // Ukrainian Quotes
                 br#"Only struggle means to live (c) Ivan Franko"#.to_vec(),
                 br#"Contra spem spero (c) Lesya Ukrainka"#.to_vec(),
@@ -59,8 +59,6 @@ impl CtrGame {
                 br#"We shall fight on the beaches of Odesa"#.to_vec(),
                 br#"We shall fight on the seas of Azov and Black Sea."#.to_vec(),
                 br#"We shall fight on the landing grounds (Hostomel)"#.to_vec(),
-                // Nazis
-                br#"Wollt ihr den totalen Krieg? (c) Putler"#.to_vec(),
                 // 1984
                 br#"Who controls the past controls the future"#.to_vec(),
                 br#"Who controls the present controls the past"#.to_vec(),
