@@ -48,23 +48,19 @@ impl CtrGame {
                 br#"Better just to surrender now... (UAF to Nazis)"#.to_vec(),
                 br#"You are all F'ed... (UAF to Nazis)"#.to_vec(),
                 br#"You're on my land, and there you'll feed worms (UAF to Nazis)"#.to_vec(),
-
                 // Ukrainian Quotes
                 br#"Only struggle means to live (c) Ivan Franko"#.to_vec(),
                 br#"Contra spem spero (c) Lesya Ukrainka"#.to_vec(),
                 br#"The world chased, but never caught me (c) Skovoroda"#.to_vec(),
                 br#"When I am dead, bury me In my beloved Ukraine (c) Shevchenko"#.to_vec(),
-
                 // Churchill
                 br#"We shall never surrender. We shall go on to the end."#.to_vec(),
                 br#"We shall fight in Kherson and Mariupol..."#.to_vec(),
                 br#"We shall fight on the beaches of Odesa"#.to_vec(),
                 br#"We shall fight on the seas of Azov and Black Sea."#.to_vec(),
                 br#"We shall fight on the landing grounds (Hostomel)"#.to_vec(),
-
                 // Nazis
                 br#"Wollt ihr den totalen Krieg? (c) Putler"#.to_vec(),
-
                 // 1984
                 br#"Who controls the past controls the future"#.to_vec(),
                 br#"Who controls the present controls the past"#.to_vec(),
@@ -75,7 +71,6 @@ impl CtrGame {
                 br#"In the face of pain there are no heroes"#.to_vec(),
                 br#"Big Brother is Watching You! Even in free countries"#.to_vec(),
                 br#"It's a beautiful thing, the destruction of words"#.to_vec(),
-
                 // Crypto
                 br#"You should bought bitcoin in 2009"#.to_vec(),
                 br#"This mode is so unsecure :doggo-face:"#.to_vec(),
