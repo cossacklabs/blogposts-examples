@@ -40,14 +40,51 @@ impl CtrGame {
             flag_plaintext: vec![],
 
             plaintexts_vec: vec![
-                br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "S"}"#.to_vec(),
-                br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "M"}"#.to_vec(),
-                br#"{  "UserType": "UsualUser",     "Name": "Tom",  "Surname": "S"}"#.to_vec(),
-                br#"{  "UserType": "Administrator", "Name": "Alex", "Surname": "S"}"#.to_vec(),
-                br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "S"}"#.to_vec(),
-                br#"{  "UserType": "UsualUser",     "Name": "Alex", "Surname": "M"}"#.to_vec(),
-                br#"{  "UserType": "UsualUser",     "Name": "Tom",  "Surname": "S"}"#.to_vec(),
-                br#"{  "UserType": "Administrator", "Name": "Alex", "Surname": "S"}"#.to_vec(),
+                // Ukraine
+                br#"Free Ukraine, Donate on u24.gov.ua !"#.to_vec(),
+                br#"Russian Warship - Go F Yourself"#.to_vec(),
+                // https://youtu.be/2Cv6nFwDGvA?t=12
+                br#"Guys, don't take up a defensive position... (UAF to Nazis)"#.to_vec(),
+                br#"Better just to surrender now... (UAF to Nazis)"#.to_vec(),
+                br#"You are all F'ed... (UAF to Nazis)"#.to_vec(),
+                br#"You're on my land, and there you'll feed worms (UAF to Nazis)"#.to_vec(),
+
+                // Ukrainian Quotes
+                br#"Only struggle means to live (c) Ivan Franko"#.to_vec(),
+                br#"Contra spem spero (c) Lesya Ukrainka"#.to_vec(),
+                br#"The world chased, but never caught me (c) Skovoroda"#.to_vec(),
+                br#"When I am dead, bury me In my beloved Ukraine (c) Shevchenko"#.to_vec(),
+
+                // Churchill
+                br#"We shall never surrender. We shall go on to the end."#.to_vec(),
+                br#"We shall fight in Kherson and Mariupol..."#.to_vec(),
+                br#"We shall fight on the beaches of Odesa"#.to_vec(),
+                br#"We shall fight on the seas of Azov and Black Sea."#.to_vec(),
+                br#"We shall fight on the landing grounds (Hostomel)"#.to_vec(),
+
+                // Nazis
+                br#"Wollt ihr den totalen Krieg? (c) Putler"#.to_vec(),
+
+                // 1984
+                br#"Who controls the past controls the future"#.to_vec(),
+                br#"Who controls the present controls the past"#.to_vec(),
+                br#"War is peace. Freedom is slavery"#.to_vec(),
+                br#"Freedom is slavery. Ignorance is strength"#.to_vec(),
+                br#"If you want to keep a secret, you must also hide it from yourself"#.to_vec(),
+                br#"We shall meet in the place where there is no darkness"#.to_vec(),
+                br#"In the face of pain there are no heroes"#.to_vec(),
+                br#"Big Brother is Watching You! Even in free countries"#.to_vec(),
+                br#"It's a beautiful thing, the destruction of words"#.to_vec(),
+
+                // Crypto
+                br#"You should bought bitcoin in 2009"#.to_vec(),
+                br#"This mode is so unsecure :doggo-face:"#.to_vec(),
+                br#"This is my neighbour, Nushuktan Akbai"#.to_vec(),
+                br#"Veni, vidi, crack it (Caesar about CTR)"#.to_vec(),
+                br#"Who owns the information, he owns the world"#.to_vec(),
+                br#"Payne, I can't feel my security.."#.to_vec(),
+                br#"Bubba, that's cuz security ain't there"#.to_vec(),
+                br#"Do you still think that bare CTR or CBC is a good idea?"#.to_vec(),
             ],
             ciphertexts_vec: vec![],
         }
