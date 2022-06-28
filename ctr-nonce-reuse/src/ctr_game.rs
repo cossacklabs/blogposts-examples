@@ -42,7 +42,6 @@ impl CtrGame {
             plaintexts_vec: vec![
                 // Ukraine
                 br#"Free Ukraine, Donate on u24.gov.ua !"#.to_vec(),
-                br#"Russian Warship - Go F Yourself"#.to_vec(),
                 // Ukrainian Quotes
                 br#"Only struggle means to live (c) Ivan Franko"#.to_vec(),
                 br#"Contra spem spero (c) Lesya Ukrainka"#.to_vec(),
